@@ -1,0 +1,51 @@
+using CommandLine;
+using CommandLine.Text;
+using pathed.Libraries;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace pathed {
+  internal class Program {
+    // For later use
+    public static string[] arguments;
+
+    public static void Main(string[] args) {
+      arguments = args;
+      Console.OutputEncoding = Encoding.GetEncoding(Encoding.Default.CodePage);
+
+      Type[] _types = {
+        typeof(AppendOptions),
+        typeof(PrependOptions),
+        typeof(RemoveOptions),
+        typeof(ShowOptions),
+        typeof(SlimOptions),
+        typeof(SortOptions)
+      };
+
+      var result = new Parser(c => {
+        c.HelpWriter = null;
+        c.CaseSensitive = false;
+        c.CaseInsensitiveEnumValues = true;
+      }).ParseArguments(args, _types);
+      result.WithParsed<AppendOptions>(opt => Runner.Append(opt));
+      result.WithParsed<PrependOptions>(opt => Runner.Prepend(opt));
+      result.WithParsed<RemoveOptions>(opt => Runner.Remove(opt));
+      result.WithParsed<ShowOptions>(opt => Runner.Show(opt));
+      result.WithParsed<SlimOptions>(opt => Runner.Slim(opt));
+      result.WithParsed<SortOptions>(opt => Runner.Sort(opt));
+      result.WithNotParsed(errs => DisplayHelp(result, errs));
+    }
+
+    private static void DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs) {
+      HelpText helpText = null;
+      if (errs.IsVersion()) {
+        helpText = HelpText.AutoBuild(result);
+      } else {
+        helpText = HelpText.AutoBuild(result, h => HelpText.DefaultParsingErrorsHandler(result, h), e => e, true);
+      }
+      MyConsole.WriteLineError(helpText);
+      Environment.Exit(1);
+    }
+  }
+}
