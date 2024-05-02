@@ -1,9 +1,7 @@
 using System;
 
 namespace pathed.Libraries {
-
   public static class MyConsole {
-
     // TODO: Implement sending string to named pipe for later use
 
     public static void Write(string text) {

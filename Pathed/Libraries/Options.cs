@@ -3,7 +3,6 @@ using System;
 using System.Text;
 
 namespace pathed.Libraries {
-
   [Verb("append", HelpText = "Append variable to environment variable")]
   public class AppendOptions {
 

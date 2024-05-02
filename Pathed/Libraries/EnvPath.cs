@@ -89,9 +89,9 @@ namespace pathed.Libraries {
       return File.Exists(realPath) || Directory.Exists(realPath);
     }
 
-    private bool IsElementInArray(string[] arr, string elem, StringComparison comparisonType) { return arr.Any(e => e.Equals(elem, comparisonType)); }
-    private string[] RemoveElementFromArray(string[] arr, string elem, StringComparison comparisonType) { return arr.Where(e => !e.Equals(elem, comparisonType)).ToArray(); }
-
+    private string[] RemoveElementFromArray(string[] arr, string elem, StringComparison comparisonType) {
+      return arr.Where(e => !e.Equals(elem, comparisonType)).ToArray();
+    }
 
     // Some dirty jobs for getting actual path
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]

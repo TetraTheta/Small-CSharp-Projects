@@ -7,6 +7,7 @@ using System.Text;
 
 namespace pathed {
   internal class Program {
+
     // For later use
     public static string[] arguments;
 
