@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace DarkModeForms {
-
   public class FlatTabControl : TabControl {
 
     #region Public Properties
@@ -92,17 +91,18 @@ namespace DarkModeForms {
         }
 
         // a decorative line on top of pages:
-        using (Brush bLineColor = new SolidBrush(LineColor)) {
-          Rectangle rectangle = ClientRectangle;
-          rectangle.Height = 1;
-          rectangle.Y = 25;
-          g.FillRectangle(bLineColor, rectangle);
+        //using (Brush bLineColor = new SolidBrush(LineColor))
+        //{
+        //	Rectangle rectangle = ClientRectangle;
+        //	rectangle.Height = 1;
+        //	rectangle.Y = 25;
+        //	g.FillRectangle(bLineColor, rectangle);
 
-          rectangle = ClientRectangle;
-          rectangle.Height = 1;
-          rectangle.Y = 26;
-          g.FillRectangle(bLineColor, rectangle);
-        }
+        //	rectangle = ClientRectangle;
+        //	rectangle.Height = 1;
+        //	rectangle.Y = 26;
+        //	g.FillRectangle(bLineColor, rectangle);
+        //}
       } catch { }
     }
 
@@ -115,13 +115,13 @@ namespace DarkModeForms {
       if (Alignment == TabAlignment.Top) {
         points = new[]
         {
-          new Point(tabRect.Left, tabRect.Bottom),
-          new Point(tabRect.Left, tabRect.Top + 0),
+          new Point(tabRect.Left+3, tabRect.Bottom),
+          new Point(tabRect.Left+3, tabRect.Top + 0),
           new Point(tabRect.Left + 0, tabRect.Top),
           new Point(tabRect.Right - 0, tabRect.Top),
           new Point(tabRect.Right, tabRect.Top + 0),
           new Point(tabRect.Right, tabRect.Bottom),
-          new Point(tabRect.Left, tabRect.Bottom)
+          new Point(tabRect.Left+3, tabRect.Bottom)
         };
       } else {
         points = new[]
@@ -140,8 +140,14 @@ namespace DarkModeForms {
       Color HeaderColor = isSelected ? SelectTabColor : BackColor;
       using (Brush brush = new SolidBrush(HeaderColor)) {
         g.FillPolygon(brush, points);
-        brush.Dispose();
         g.DrawPolygon(new Pen(HeaderColor), points);
+
+        if (isSelected) {
+          g.DrawLine(new Pen(BackColor),
+            new Point(tabRect.Left, tabRect.Top), new Point(tabRect.Left + 3, tabRect.Top));
+          g.DrawLine(new Pen(Color.DodgerBlue),
+            new Point(tabRect.Left + 3, tabRect.Top), new Point(tabRect.Left + tabRect.Width, tabRect.Top));
+        }
       }
 
       Rectangle rectangleF = tabTextRect;

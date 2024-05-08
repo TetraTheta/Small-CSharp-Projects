@@ -6,11 +6,34 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using static DarkModeForms.KeyValue;
 
 namespace DarkModeForms {
   /* Author: BlueMystic (bluemystic.play@gmail.com)  2024 */
-
   public static class Messenger {
+
+    #region Events
+
+    /// <summary>Manejador de Eventos para los Click en Botones</summary>
+    private static Action<object, ValidateEventArgs> ValidateControlsHandler;
+
+    /// <summary>Validates all Controls and allows to Cancel the changes.</summary>
+    public static event Action<object, ValidateEventArgs> ValidateControls {
+      add => ValidateControlsHandler += value;
+      remove => ValidateControlsHandler -= value;
+    }
+
+    /// <summary>Previene multiples invocaciones entre llamadas a la misma instancia del evento</summary>
+    private static void ResetEvents() {
+      ValidateControlsHandler = null;
+    }
+
+    #endregion Events
+
+    #region MessageBox
+
+    public static DialogResult MessageBox(string Message)
+      => MessageBox(Message, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
     /// <summary>Shows an Error Message.</summary>
     /// <param name="ex">an Exception error to show</param>
@@ -29,17 +52,17 @@ namespace DarkModeForms {
       MessageBoxIcon icon = MessageBoxIcon.Information) {
       Debug.WriteLine(icon.ToString());
 
-      Base64Icons.MsgIcon Icon = Base64Icons.MsgIcon.None;
+      MsgIcon Icon = MsgIcon.None;
 
       /*
-        "..In current implementations there are ONLY four unique symbols with multiple values assigned to them."
-        https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.messageboxicon?view=netframework-4.8
-       */
+				"..In current implementations there are ONLY four unique symbols with multiple values assigned to them."
+				https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.messageboxicon?view=netframework-4.8
+			 */
       switch (icon) {
-        case MessageBoxIcon.Information: Icon = Base64Icons.MsgIcon.Info; break;
-        case MessageBoxIcon.Exclamation: Icon = Base64Icons.MsgIcon.Success; break;
-        case MessageBoxIcon.Question: Icon = Base64Icons.MsgIcon.Question; break;
-        case MessageBoxIcon.Error: Icon = Base64Icons.MsgIcon.Cancel; break;
+        case MessageBoxIcon.Information: Icon = MsgIcon.Info; break;
+        case MessageBoxIcon.Exclamation: Icon = MsgIcon.Success; break;
+        case MessageBoxIcon.Question: Icon = MsgIcon.Question; break;
+        case MessageBoxIcon.Error: Icon = MsgIcon.Cancel; break;
         default:
           break;
       }
@@ -54,7 +77,7 @@ namespace DarkModeForms {
     /// <param name="buttons">One of the MessageBoxButtons values that specifies which buttons to display in the message box.</param>
     /// <returns>It is a modal window, blocking other actions in the application until the user closes it.</returns>
     public static DialogResult MessageBox(
-      string Message, string title, Base64Icons.MsgIcon Icon,
+      string Message, string title, MsgIcon Icon,
       MessageBoxButtons buttons = MessageBoxButtons.OK) {
       Form form = new Form {
         FormBorderStyle = FormBorderStyle.FixedDialog,
@@ -63,8 +86,7 @@ namespace DarkModeForms {
         MinimizeBox = false,
         Text = title,
         Width = 340,
-        Height = 170,
-        AutoSize = true,
+        Height = 170
       };
 
       DarkModeCS DMode = new DarkModeCS(form);
@@ -89,8 +111,7 @@ namespace DarkModeForms {
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.OK,
-            Text = ButtonTranslations["OK"],
-            AutoSize = true
+            Text = ButtonTranslations["OK"]
           });
           form.AcceptButton = CmdButtons[0];
           break;
@@ -99,14 +120,12 @@ namespace DarkModeForms {
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.OK,
-            Text = ButtonTranslations["OK"],
-            AutoSize = true
+            Text = ButtonTranslations["OK"]
           });
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.Cancel,
-            Text = ButtonTranslations["Cancel"],
-            AutoSize = true
+            Text = ButtonTranslations["Cancel"]
           });
           form.AcceptButton = CmdButtons[0];
           form.CancelButton = CmdButtons[1];
@@ -116,14 +135,12 @@ namespace DarkModeForms {
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.Retry,
-            Text = ButtonTranslations["Retry"],
-            AutoSize = true
+            Text = ButtonTranslations["Retry"]
           });
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.Abort,
-            Text = ButtonTranslations["Abort"],
-            AutoSize = true
+            Text = ButtonTranslations["Abort"]
           });
           form.AcceptButton = CmdButtons[0];
           form.CancelButton = CmdButtons[1];
@@ -133,20 +150,17 @@ namespace DarkModeForms {
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.Yes,
-            Text = ButtonTranslations["Yes"],
-            AutoSize = true
+            Text = ButtonTranslations["Yes"]
           });
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.No,
-            Text = ButtonTranslations["No"],
-            AutoSize = true
+            Text = ButtonTranslations["No"]
           });
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.Cancel,
-            Text = ButtonTranslations["Cancel"],
-            AutoSize = true
+            Text = ButtonTranslations["Cancel"]
           });
           form.AcceptButton = CmdButtons[0];
           form.CancelButton = CmdButtons[2];
@@ -156,14 +170,12 @@ namespace DarkModeForms {
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.Yes,
-            Text = ButtonTranslations["Yes"],
-            AutoSize = true
+            Text = ButtonTranslations["Yes"]
           });
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.No,
-            Text = ButtonTranslations["No"],
-            AutoSize = true
+            Text = ButtonTranslations["No"]
           });
           form.AcceptButton = CmdButtons[0];
           form.CancelButton = CmdButtons[1];
@@ -173,41 +185,39 @@ namespace DarkModeForms {
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.Retry,
-            Text = ButtonTranslations["Retry"],
-            AutoSize = true
+            Text = ButtonTranslations["Retry"]
           });
           CmdButtons.Add(new Button() {
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
             DialogResult = DialogResult.Cancel,
-            Text = ButtonTranslations["Cancel"],
-            AutoSize = true
+            Text = ButtonTranslations["Cancel"]
           });
           form.AcceptButton = CmdButtons[0];
           form.CancelButton = CmdButtons[1];
           break;
         /*
-        case MessageBoxButtons.CancelTryContinue:
-          CmdButtons.Add(new Button()
-          {
-            Anchor = AnchorStyles.Top | AnchorStyles.Right,
-            DialogResult = DialogResult.Cancel,
-            Text = ButtonTranslations["Cancel"]
-          });
-          CmdButtons.Add(new Button()
-          {
-            Anchor = AnchorStyles.Top | AnchorStyles.Right,
-            DialogResult = DialogResult.Continue,
-            Text = ButtonTranslations["Continue"]
-          });
-          form.AcceptButton = CmdButtons[0];
-          form.CancelButton = CmdButtons[1];
-          break;
-          */
+				case MessageBoxButtons.CancelTryContinue:
+					CmdButtons.Add(new Button()
+					{
+						Anchor = AnchorStyles.Top | AnchorStyles.Right,
+						DialogResult = DialogResult.Cancel,
+						Text = ButtonTranslations["Cancel"]
+					});
+					CmdButtons.Add(new Button()
+					{
+						Anchor = AnchorStyles.Top | AnchorStyles.Right,
+						DialogResult = DialogResult.Continue,
+						Text = ButtonTranslations["Continue"]
+					});
+					form.AcceptButton = CmdButtons[0];
+					form.CancelButton = CmdButtons[1];
+					break;
+					*/
         default:
           break;
       }
 
-      int Padding = 8;
+      int Padding = 4;
       int LastPos = form.ClientSize.Width;
 
       foreach (var _button in CmdButtons) {
@@ -223,7 +233,7 @@ namespace DarkModeForms {
       #region Icon
 
       Rectangle picBox = new Rectangle(2, 10, 0, 0);
-      if (Icon != Base64Icons.MsgIcon.None) {
+      if (Icon != MsgIcon.None) {
         PictureBox picIcon = new PictureBox() { SizeMode = PictureBoxSizeMode.Zoom, Size = new Size(64, 64) };
         picIcon.Image = _Icons.GetIcon(Icon);
         form.Controls.Add(picIcon);
@@ -242,7 +252,7 @@ namespace DarkModeForms {
         AutoSize = true,
         //BackColor = Color.Fuchsia,
         ForeColor = DMode.OScolors.TextActive,
-        TextAlign = ContentAlignment.MiddleLeft,
+        TextAlign = ContentAlignment.MiddleCenter,
         Location = new Point(picBox.X + picBox.Width + 4, picBox.Y),
         MaximumSize = new Size(form.ClientSize.Width - (picBox.X + picBox.Width) + 8, 0),
         MinimumSize = new Size(form.ClientSize.Width - (picBox.X + picBox.Width) + 8, 64),
@@ -260,6 +270,10 @@ namespace DarkModeForms {
 
       return form.ShowDialog();
     }
+
+    #endregion MessageBox
+
+    #region InputBox
 
     /// <summary>Muestra un mensaje en un cuadro de diálogo, solicitando al usuario el ingreso de datos varios.</summary>
     /// <example>Modo de Uso del <see cref="InputBox"/> method.
@@ -282,7 +296,7 @@ namespace DarkModeForms {
     /// <returns>OK si el usuario acepta. By BlueMystic @2024</returns>
     public static DialogResult InputBox(
       string title, string promptText, ref List<KeyValue> Fields,
-      Base64Icons.MsgIcon Icon = 0, MessageBoxButtons buttons = MessageBoxButtons.OK) {
+      MsgIcon Icon = 0, MessageBoxButtons buttons = MessageBoxButtons.OK) {
       Form form = new Form {
         FormBorderStyle = FormBorderStyle.FixedDialog,
         StartPosition = FormStartPosition.CenterParent,
@@ -290,8 +304,7 @@ namespace DarkModeForms {
         MinimizeBox = false,
         Text = title,
         Width = 340,
-        Height = 170,
-        AutoSize = true,
+        Height = 170
       };
 
       DarkModeCS DMode = new DarkModeCS(form);
@@ -314,7 +327,7 @@ namespace DarkModeForms {
 
       #region Icon
 
-      if (Icon != Base64Icons.MsgIcon.None) {
+      if (Icon != MsgIcon.None) {
         PictureBox picIcon = new PictureBox() { SizeMode = PictureBoxSizeMode.Zoom, Size = new Size(48, 48) };
         picIcon.Image = _Icons.GetIcon(Icon);
         bottomPanel.Controls.Add(picIcon);
@@ -421,23 +434,23 @@ namespace DarkModeForms {
           form.CancelButton = CmdButtons[1];
           break;
         /*
-        case MessageBoxButtons.CancelTryContinue:
-          CmdButtons.Add(new Button()
-          {
-            Anchor = AnchorStyles.Top | AnchorStyles.Right,
-            DialogResult = DialogResult.Cancel,
-            Text = ButtonTranslations["Cancel"]
-          });
-          CmdButtons.Add(new Button()
-          {
-            Anchor = AnchorStyles.Top | AnchorStyles.Right,
-            DialogResult = DialogResult.Continue,
-            Text = ButtonTranslations["Continue"]
-          });
-          form.AcceptButton = CmdButtons[0];
-          form.CancelButton = CmdButtons[1];
-          break;
-          */
+				case MessageBoxButtons.CancelTryContinue:
+					CmdButtons.Add(new Button()
+					{
+						Anchor = AnchorStyles.Top | AnchorStyles.Right,
+						DialogResult = DialogResult.Cancel,
+						Text = ButtonTranslations["Cancel"]
+					});
+					CmdButtons.Add(new Button()
+					{
+						Anchor = AnchorStyles.Top | AnchorStyles.Right,
+						DialogResult = DialogResult.Continue,
+						Text = ButtonTranslations["Continue"]
+					});
+					form.AcceptButton = CmdButtons[0];
+					form.CancelButton = CmdButtons[1];
+					break;
+					*/
         default:
           break;
       }
@@ -451,6 +464,18 @@ namespace DarkModeForms {
 
         _button.Location = new Point(LastPos - (_button.Width + Padding), (bottomPanel.Height - _button.Height) / 2);
         LastPos = _button.Left;
+
+        //if (_button == form.AcceptButton)
+        //{
+        //_button.Click += (s, e) =>
+        //{
+        //	CancelEventArgs args = new CancelEventArgs();
+        //	ValidateControls(null, args);
+
+        //	//2.  If the Client cancelled the change, revert to the previous value:
+        //	if (args.Cancel) {  }
+        //};
+        //}
       }
 
       #endregion Buttons
@@ -461,9 +486,9 @@ namespace DarkModeForms {
         Dock = DockStyle.Top,
         Text = promptText,
         //Font = new Font(form.Font, FontStyle.Bold),
-        AutoSize = true,
+        AutoSize = false,
         Height = 24,
-        TextAlign = ContentAlignment.MiddleLeft
+        TextAlign = ContentAlignment.MiddleCenter
       };
       form.Controls.Add(lblPrompt);
 
@@ -671,9 +696,27 @@ namespace DarkModeForms {
         Contenedor.Height +
         20
       );
+      form.FormClosing += (sender, e) => {
+        //Control Validations
+        if (form.ActiveControl == form.AcceptButton) {
+          ValidateEventArgs cArgs = new ValidateEventArgs(null);
+
+          ValidateControlsHandler?.Invoke(form, cArgs); //<- Dispara el Evento
+
+          e.Cancel = cArgs.Cancel;
+          if (!e.Cancel) {
+            form.DialogResult = form.AcceptButton.DialogResult;
+          }
+          //ResetEvents(); //<- Previene multiples llamadas
+        }
+      };
 
       return form.ShowDialog();
     }
+
+    #endregion InputBox
+
+    #region Private Stuff
 
     private static Dictionary<Control, System.Windows.Forms.Timer> timers;
 
@@ -706,11 +749,21 @@ namespace DarkModeForms {
       if (IsCurrentLanguageSupported(new List<string>() { "en", "es", "fr", "de", "ru", "ko" }, CurrentLanguage)) {
         _ret = CurrentLanguage;
       }
+      if (CurrentLanguage.ToLowerInvariant().Equals("zh")) {
+        var LangVariable = CultureInfo.CurrentCulture.Name;
+        if (string.Equals(LangVariable, "zh-CN") || string.Equals(LangVariable, "zh-SG") || string.Equals(LangVariable, "zh-Hans")) {
+          _ret = "zh-Hans";
+        } else if (string.Equals(LangVariable, "zh-TW") || string.Equals(LangVariable, "zh-HK") || string.Equals(LangVariable, "zh-MO") || string.Equals(LangVariable, "zh-Hant")) {
+          _ret = "zh-Hant";
+        } else {
+          _ret = "zh-Hans";
+        }
+      }
       return _ret;
     }
 
     /// <summary>Return the Translations for the desired language (if supported).</summary>
-    /// <param name="pLanguage">Supported Languages: [en, es, fr, de, ru]</param>
+    /// <param name="pLanguage">Supported Languages: [en, es, fr, de, ru, ko]</param>
     /// <returns>Keys: OK, Cancel, Yes, No, Continue, Retry, Abort</returns>
     private static Dictionary<string, string> GetButtonTranslations(string pLanguage) {
       Dictionary<string, string> _ret = null;
@@ -723,8 +776,10 @@ namespace DarkModeForms {
         { "de", "Akzeptieren|Abbrechen|Ja|Nein|Weiter|Wiederholen|Abbrechen|Ignorieren"},
         { "ru", "Принять|Отменить|Да|Нет|Продолжить|Повторить|Прервать|Игнорировать" },
         { "ko", "확인|취소|예|아니오|계속|다시 시도|중단|무시" },
-        /* Add here you own language button translations */
-      };
+        { "zh-Hans", "确定|取消|是|否|继续|重试|中止|忽略" },
+        { "zh-Hant", "確定|取消|是|否|繼續|重試|中止|忽略" }
+				/* Add here you own language button translations */
+			};
 
       string raw = ButtonTranslations[pLanguage];
       if (!string.IsNullOrEmpty(raw)) {
@@ -767,6 +822,25 @@ namespace DarkModeForms {
 
       return false;
     }
+
+    #endregion Private Stuff
+  }
+
+  /// <summary>Constants for the Default Icons.</summary>
+  public enum MsgIcon {
+    None = 0,
+    Info,
+    Success,
+    Warning,
+    Error,
+    Question,
+    Lock,
+    User,
+    Forbidden,
+    AddNew,
+    Cancel,
+    Edit,
+    List
   }
 
   /// <summary>Stores Data for Dynamic Fields on the InputBox Dialog.</summary>
@@ -935,23 +1009,6 @@ namespace DarkModeForms {
       set {
         this._Icons = value;
       }
-    }
-
-    /// <summary>Constants for the Default Icons.</summary>
-    public enum MsgIcon {
-      None = 0,
-      Info,
-      Success,
-      Warning,
-      Error,
-      Question,
-      Lock,
-      User,
-      Forbidden,
-      AddNew,
-      Cancel,
-      Edit,
-      List
     }
 
     /// <summary>Returns the Image of the desired Icon, if exists in the Colection.</summary>

@@ -85,13 +85,29 @@ namespace pathed.Libraries {
     }
 
     private bool DoesExist(string path) {
+      bool result;
       string realPath = Environment.ExpandEnvironmentVariables(path);
-      return File.Exists(realPath) || Directory.Exists(realPath);
+      result = File.Exists(realPath) || Directory.Exists(realPath);
+      if (!result) {
+        // Check again with File System Redirection
+        IntPtr wow64Value = IntPtr.Zero;
+        Wow64DisableWow64FsRedirection(ref wow64Value);
+        result = File.Exists(realPath) || Directory.Exists(realPath);
+        Wow64RevertWow64FsRedirection(wow64Value);
+      }
+      return result;
     }
 
     private string[] RemoveElementFromArray(string[] arr, string elem, StringComparison comparisonType) {
       return arr.Where(e => !e.Equals(elem, comparisonType)).ToArray();
     }
+
+    // Some dirty jobs for disabling File System Redirection
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    private static extern bool Wow64DisableWow64FsRedirection(ref IntPtr ptr);
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+    private static extern bool Wow64RevertWow64FsRedirection(IntPtr ptr);
 
     // Some dirty jobs for getting actual path
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]

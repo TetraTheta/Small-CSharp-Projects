@@ -5,9 +5,8 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace DarkModeForms {
-
   /// <summary>This tries to automatically apply Windows Dark Mode (if enabled) to a Form.
-  /// <para>Author: Blue Mystic - 2024</para></summary>
+  /// <para>Author: BlueMystic (bluemystic.play@gmail.com)  2024</para></summary>
   public class DarkModeCS {
 
     #region Win32 API Declarations
@@ -195,6 +194,17 @@ namespace DarkModeForms {
       int nHeightEllipse // width of ellipse
     );
 
+    [DllImport("user32")]
+    private static extern IntPtr GetDC(IntPtr hwnd);
+
+    [DllImport("user32")]
+    private static extern IntPtr ReleaseDC(IntPtr hwnd, IntPtr hdc);
+
+    public static IntPtr GetHeaderControl(ListView list) {
+      const int LVM_GETHEADER = 0x1000 + 31;
+      return SendMessage(list.Handle, LVM_GETHEADER, IntPtr.Zero, "");
+    }
+
     #endregion Win32 API Declarations
 
     #region Public Members
@@ -217,25 +227,6 @@ namespace DarkModeForms {
     #endregion Public Members
 
     #region Constructors
-
-    /// <summary>This tries to automatically apply Windows Dark Mode (if enabled) to a Form.</summary>
-    /// <param name="_Form">The Form to become Dark</param>
-    public DarkModeCS(Form _Form) {
-      OwnerForm = _Form;
-      IsDarkMode = GetWindowsColorMode() <= 0 ? true : false;
-      OScolors = GetSystemColors(OwnerForm);
-
-      if (IsDarkMode && OScolors != null) {
-        if (OwnerForm != null && OwnerForm.Controls != null) {
-          foreach (Control _control in OwnerForm.Controls) {
-            ThemeControl(_control);
-          }
-          OwnerForm.ControlAdded += (object sender, ControlEventArgs e) => {
-            ThemeControl(e.Control);
-          };
-        }
-      }
-    }
 
     /// <summary>This tries to automatically apply Windows Dark Mode (if enabled) to a Form.</summary>
     /// <param name="_Form">The Form to become Dark</param>
@@ -312,7 +303,7 @@ namespace DarkModeForms {
       }
       if (control is TabControl tab) {
         tab.Appearance = TabAppearance.Normal;
-        tab.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+        tab.DrawMode = TabDrawMode.OwnerDrawFixed;
         tab.DrawItem += (object sender, DrawItemEventArgs e) => {
           //Draw the background of the main control
           using (SolidBrush backColor = new SolidBrush(tab.Parent.BackColor)) {
@@ -354,6 +345,48 @@ namespace DarkModeForms {
       if (control is PictureBox pic) {
         pic.BorderStyle = BorderStyle.None;
         pic.BackColor = pic.Parent.BackColor;
+      }
+      if (control is ListView lView) {
+        if (lView.View == View.Details) {
+          lView.OwnerDraw = true;
+          lView.DrawColumnHeader += (object sender, DrawListViewColumnHeaderEventArgs e) => {
+            //e.DrawDefault = true;
+            //e.DrawBackground();
+            //e.DrawText();
+
+            using (SolidBrush backBrush = new SolidBrush(OScolors.ControlLight)) {
+              using (SolidBrush foreBrush = new SolidBrush(OScolors.TextActive)) {
+                using (var sf = new StringFormat()) {
+                  sf.Alignment = StringAlignment.Center;
+                  e.Graphics.FillRectangle(backBrush, e.Bounds);
+                  e.Graphics.DrawString(e.Header.Text, lView.Font, foreBrush, e.Bounds, sf);
+                }
+              }
+            }
+          };
+          lView.DrawItem += (sender, e) => { e.DrawDefault = true; };
+          lView.DrawSubItem += (sender, e) => {
+            e.DrawDefault = true;
+            /*
+						IntPtr headerControl = GetHeaderControl(lView);
+						IntPtr hdc = GetDC(headerControl);
+						Rectangle rc = new Rectangle(
+							e.Bounds.Right, //<- Right instead of Left - offsets the rectangle
+							e.Bounds.Top,
+							e.Bounds.Width,
+							e.Bounds.Height
+						);
+						rc.Width += 200;
+
+						using (SolidBrush backBrush = new SolidBrush(OScolors.ControlLight))
+						{
+							e.Graphics.FillRectangle(backBrush, rc);
+						}
+
+						ReleaseDC(headerControl, hdc);
+						*/
+          };
+        }
       }
       if (control is Button button) {
         button.FlatStyle = FStyle;
@@ -429,6 +462,28 @@ namespace DarkModeForms {
       if (control is TreeView tree) {
         tree.BorderStyle = BorderStyle.None;
         tree.BackColor = OScolors.Surface;
+        /*
+				tree.DrawNode += (object? sender, DrawTreeNodeEventArgs e) =>
+				{
+					if (e.Node.ImageIndex != -1)
+					{
+						Image image = tree.ImageList.Images[e.Node.ImageIndex];
+						using (Graphics g = Graphics.FromImage(image))
+						{
+							g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+							g.CompositingQuality = CompositingQuality.HighQuality;
+							g.SmoothingMode = SmoothingMode.HighQuality;
+
+							g.DrawImage(DarkModeCS.ChangeToColor(image, OScolors.TextInactive), new Point(0,0));
+						}
+						tree.ImageList.Images[e.Node.ImageIndex] = image;
+					}
+					tree.Invalidate();
+				};
+				*/
+      }
+      if (control is TrackBar slider) {
+        slider.BackColor = control.Parent.BackColor;
       }
 
       if (control.ContextMenuStrip != null)
@@ -438,6 +493,10 @@ namespace DarkModeForms {
         // Recursively process its children
         ThemeControl(childControl);
       }
+    }
+
+    private void Tree_DrawNode(object sender, DrawTreeNodeEventArgs e) {
+      throw new NotImplementedException();
     }
 
     /// <summary>Returns Windows Color Mode for Applications.
@@ -462,13 +521,16 @@ namespace DarkModeForms {
 
       //get the theme --> only if Windows 10 or newer
       if (IsWindows10orGreater()) {
-        var opaque = true;
-        var color = (int)colors.ColorizationColor;
+        var color = colors.ColorizationColor;
 
-        return Color.FromArgb((byte)(opaque ? 255 : (color >> 24) & 0xff),
-                    (byte)((color >> 16) & 0xff),
-                    (byte)((color >> 8) & 0xff),
-                    (byte)(color) & 0xff);
+        var colorValue = long.Parse(color.ToString(), System.Globalization.NumberStyles.HexNumber);
+
+        var transparency = (colorValue & 0xFF000000) >> 24;
+        var red = (colorValue & 0x00FF0000) >> 16;
+        var green = (colorValue & 0x0000FF00) >> 8;
+        var blue = colorValue & 0x000000FF;
+
+        return Color.FromArgb((int)transparency, (int)red, (int)green, (int)blue);
       } else {
         return Color.CadetBlue;
       }
@@ -526,7 +588,7 @@ namespace DarkModeForms {
 
         if (_Control != null) {
           _Control.GetType().GetProperty("BorderStyle")?.SetValue(_Control, BorderStyle.None);
-          _Control.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, _Control.Width, _Control.Height, Radius, Radius));
+          _Control.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, _Control.Width, _Control.Height, Radius, Radius));
           _Control.Paint += (object sender, PaintEventArgs e) => {
             //base.OnPaint(e);
             Graphics graph = e.Graphics;
@@ -551,7 +613,7 @@ namespace DarkModeForms {
                   }
                 }
                 graph.SmoothingMode = SmoothingMode.AntiAlias;
-                penBorder.Alignment = System.Drawing.Drawing2D.PenAlignment.Center;
+                penBorder.Alignment = PenAlignment.Center;
                 //if (isFocused) penBorder.Color = borderFocusColor;
 
                 if (underlinedStyle) //Line Style
@@ -575,6 +637,40 @@ namespace DarkModeForms {
       } catch { throw; }
     }
 
+    /// <summary>Colorea una imagen usando una Matrix de Color.</summary>
+    /// <param name="bmp">Imagen a Colorear</param>
+    /// <param name="c">Color a Utilizar</param>
+    public static Bitmap ChangeToColor(Bitmap bmp, Color c) {
+      Bitmap bmp2 = new Bitmap(bmp.Width, bmp.Height);
+      using (Graphics g = Graphics.FromImage(bmp2)) {
+        g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+        g.CompositingQuality = CompositingQuality.HighQuality;
+        g.SmoothingMode = SmoothingMode.HighQuality;
+
+        float tR = c.R / 255f;
+        float tG = c.G / 255f;
+        float tB = c.B / 255f;
+
+        System.Drawing.Imaging.ColorMatrix colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][]
+        {
+          new float[] { 0,    0,  0,  0,  0 },
+          new float[] { 0,    0,  0,  0,  0 },
+          new float[] { 0,    0,  0,  0,  0 },
+          new float[] { 0,    0,  0,  1,  0 },  //<- not changing alpha
+					new float[] { tR,   tG, tB, 0,  1 }
+        });
+
+        System.Drawing.Imaging.ImageAttributes attributes = new System.Drawing.Imaging.ImageAttributes();
+        attributes.SetColorMatrix(colorMatrix);
+
+        g.DrawImage(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height),
+          0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, attributes);
+      }
+      return bmp2;
+    }
+
+    public static Image ChangeToColor(Image bmp, Color c) => ChangeToColor((Bitmap)bmp, c);
+
     #endregion Public Methods
 
     #region Private Methods
@@ -583,17 +679,17 @@ namespace DarkModeForms {
     /// <param name="control"></param>
     private static void ApplySystemDarkTheme(Control control = null) {
       /*
-        DWMWA_USE_IMMERSIVE_DARK_MODE:   https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
+				DWMWA_USE_IMMERSIVE_DARK_MODE:   https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
 
-        Use with DwmSetWindowAttribute. Allows the window frame for this window to be drawn in dark mode colors when the dark mode system setting is enabled.
-        For compatibility reasons, all windows default to light mode regardless of the system setting.
-        The pvAttribute parameter points to a value of type BOOL. TRUE to honor dark mode for the window, FALSE to always use light mode.
+				Use with DwmSetWindowAttribute. Allows the window frame for this window to be drawn in dark mode colors when the dark mode system setting is enabled.
+				For compatibility reasons, all windows default to light mode regardless of the system setting.
+				The pvAttribute parameter points to a value of type BOOL. TRUE to honor dark mode for the window, FALSE to always use light mode.
 
-        This value is supported starting with Windows 11 Build 22000.
+				This value is supported starting with Windows 11 Build 22000.
 
-        SetWindowTheme:     https://learn.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-setwindowtheme
-        Causes a window to use a different set of visual style information than its class normally uses.
-       */
+				SetWindowTheme:     https://learn.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-setwindowtheme
+				Causes a window to use a different set of visual style information than its class normally uses.
+			 */
       int[] DarkModeOn = new[] { 0x01 }; //<- 1=True, 0=False
 
       SetWindowTheme(control.Handle, "DarkMode_Explorer", null);
@@ -718,7 +814,6 @@ namespace DarkModeForms {
   }
 
   /* Custom Renderers for Menus and ToolBars */
-
   public class MyRenderer : ToolStripProfessionalRenderer {
     public bool ColorizeIcons { get; set; } = true;
     public OSThemeColors MyColors { get; set; } //<- Your Custom Colors Colection
@@ -939,7 +1034,7 @@ namespace DarkModeForms {
       Color gradientEnd = MyColors.Background; // Color.FromArgb(125, 165, 224);
 
       bool DrawIt = false;
-      var _menu = e.Item as ToolStripItem;
+      var _menu = e.Item;
       if (_menu.Pressed) {
         gradientBegin = MyColors.Control; // Color.FromArgb(254, 128, 62);
         gradientEnd = MyColors.Control; // Color.FromArgb(255, 223, 154);
@@ -969,7 +1064,7 @@ namespace DarkModeForms {
         Color _ClearColor = e.Item.Enabled ? MyColors.TextInactive : MyColors.SurfaceDark;
 
         // Create a new image with the desired color adjustments
-        using (Image adjustedImage = ChangeToColor(image, _ClearColor)) {
+        using (Image adjustedImage = DarkModeCS.ChangeToColor(image, _ClearColor)) {
           e.Graphics.InterpolationMode = InterpolationMode.HighQualityBilinear;
           e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
           e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
@@ -977,40 +1072,6 @@ namespace DarkModeForms {
         }
       }
     }
-
-    /// <summary>Colorea una imagen usando una Matrix de Color.</summary>
-    /// <param name="bmp">Imagen a Colorear</param>
-    /// <param name="c">Color a Utilizar</param>
-    private Bitmap ChangeToColor(Bitmap bmp, Color c) {
-      Bitmap bmp2 = new Bitmap(bmp.Width, bmp.Height);
-      using (Graphics g = Graphics.FromImage(bmp2)) {
-        g.InterpolationMode = InterpolationMode.HighQualityBilinear;
-        g.CompositingQuality = CompositingQuality.HighQuality;
-        g.SmoothingMode = SmoothingMode.HighQuality;
-
-        float tR = c.R / 255f;
-        float tG = c.G / 255f;
-        float tB = c.B / 255f;
-
-        System.Drawing.Imaging.ColorMatrix colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][]
-        {
-          new float[] { 0,    0,  0,  0,  0 },
-          new float[] { 0,    0,  0,  0,  0 },
-          new float[] { 0,    0,  0,  0,  0 },
-          new float[] { 0,    0,  0,  1,  0 },  //<- not changing alpha
-          new float[] { tR,   tG, tB, 0,  1 }
-        });
-
-        System.Drawing.Imaging.ImageAttributes attributes = new System.Drawing.Imaging.ImageAttributes();
-        attributes.SetColorMatrix(colorMatrix);
-
-        g.DrawImage(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height),
-          0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, attributes);
-      }
-      return bmp2;
-    }
-
-    private Image ChangeToColor(Image bmp, Color c) => (Image)ChangeToColor((Bitmap)bmp, c);
   }
 
   public class CustomColorTable : ProfessionalColorTable {
@@ -1018,7 +1079,7 @@ namespace DarkModeForms {
 
     public CustomColorTable(OSThemeColors _Colors) {
       Colors = _Colors;
-      base.UseSystemColors = false;
+      UseSystemColors = false;
     }
 
     public override Color ImageMarginGradientBegin {
