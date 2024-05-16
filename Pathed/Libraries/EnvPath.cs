@@ -13,17 +13,20 @@ namespace pathed.Libraries {
     private readonly string target;
     private string[] paths;
 
-    public EnvPath(string key, EnvironmentVariableTarget target) {
+    public EnvPath(string key, EnvironmentVariableTarget evTarget) {
       this.key = key;
-      this.target = target.ToString();
-      paths = Environment.GetEnvironmentVariable(key, target).Split(';');
+      target = evTarget.ToString();
+      paths = Environment.GetEnvironmentVariable(key, evTarget)
+        .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+        .Select(path => path.Replace(";", "")).ToArray();
     }
 
     public void Append(string value) {
       string realValue;
       try {
-        realValue = GetFinalPathName(value);
+        realValue = GetFullPath(value);
       } catch (Win32Exception) {
+        MyConsole.WriteLineError("Failed to get full path of '" + value + "'");
         realValue = value;
       }
       if (paths.Contains(realValue, StringComparer.OrdinalIgnoreCase)) paths = RemoveElementFromArray(paths, realValue, StringComparison.OrdinalIgnoreCase);
@@ -34,8 +37,9 @@ namespace pathed.Libraries {
     public void Prepend(string value) {
       string realValue;
       try {
-        realValue = GetFinalPathName(value);
+        realValue = GetFullPath(value);
       } catch (Win32Exception) {
+        MyConsole.WriteLineError("Failed to get full path of '" + value + "'");
         realValue = value;
       }
       if (paths.Contains(realValue, StringComparer.OrdinalIgnoreCase)) paths = RemoveElementFromArray(paths, realValue, StringComparison.OrdinalIgnoreCase);
@@ -66,7 +70,7 @@ namespace pathed.Libraries {
         if (string.IsNullOrEmpty(paths[i])) continue;
         string expanded;
         try {
-          expanded = GetFinalPathName(Environment.ExpandEnvironmentVariables(paths[i]));
+          expanded = GetFullPath(paths[i]);
           if (!DoesExist(expanded)) continue;
           uniquePaths.Add(expanded);
         } catch (Win32Exception) { continue; }
@@ -81,21 +85,36 @@ namespace pathed.Libraries {
     }
 
     public override string ToString() {
-      return string.Join(";", paths);
+      string str = string.Join(";", paths);
+      if (str.StartsWith(";")) str = str.Substring(1);
+      if (!str.EndsWith(";")) str += ";";
+      return str;
     }
 
     private bool DoesExist(string path) {
+      // Check first with File System Redirection disabled
+      IntPtr wow64Value = IntPtr.Zero;
+      Wow64DisableWow64FsRedirection(ref wow64Value);
       bool result;
-      string realPath = Environment.ExpandEnvironmentVariables(path);
+      string realPath = Expand(path); // No need to get full path
       result = File.Exists(realPath) || Directory.Exists(realPath);
       if (!result) {
-        // Check again with File System Redirection
-        IntPtr wow64Value = IntPtr.Zero;
-        Wow64DisableWow64FsRedirection(ref wow64Value);
-        result = File.Exists(realPath) || Directory.Exists(realPath);
+        // Check again with File System Redirection enabled
         Wow64RevertWow64FsRedirection(wow64Value);
+        result = File.Exists(realPath) || Directory.Exists(realPath);
       }
+      Wow64RevertWow64FsRedirection(wow64Value);
       return result;
+    }
+
+    private string Expand(string path) {
+      // I'm lazy
+      return Environment.ExpandEnvironmentVariables(path);
+    }
+
+    private string GetFullPath(string path) {
+      // I'm lazy
+      return GetFinalPathName(Expand(path));
     }
 
     private string[] RemoveElementFromArray(string[] arr, string elem, StringComparison comparisonType) {
@@ -129,10 +148,18 @@ namespace pathed.Libraries {
     private const uint FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
 
     private static string GetFinalPathName(string dirtyPath) {
-      using (var directoryHandle = CreateFile(dirtyPath, 0, FileShare.ReadWrite | FileShare.Delete, IntPtr.Zero, FileMode.Open, (FileAttributes)FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero)) {
-        if (directoryHandle.IsInvalid) throw new Win32Exception(Marshal.GetLastWin32Error());
-        return GetFinalPathNameByHandle(directoryHandle);
+      // Check first with File System Redirection disabled
+      IntPtr wow64Value = IntPtr.Zero;
+      Wow64DisableWow64FsRedirection(ref wow64Value);
+      SafeFileHandle directoryHandle = CreateFile(dirtyPath, 0, FileShare.ReadWrite | FileShare.Delete, IntPtr.Zero, FileMode.Open, (FileAttributes)FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
+      if (directoryHandle.IsInvalid) {
+        // Check again with File System Redirection enabled
+        Wow64RevertWow64FsRedirection(wow64Value);
+        directoryHandle = CreateFile(dirtyPath, 0, FileShare.ReadWrite | FileShare.Delete, IntPtr.Zero, FileMode.Open, (FileAttributes)FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
       }
+      if (directoryHandle.IsInvalid) throw new Win32Exception(Marshal.GetLastWin32Error());
+      Wow64RevertWow64FsRedirection(wow64Value);
+      return GetFinalPathNameByHandle(directoryHandle);
     }
   }
 }

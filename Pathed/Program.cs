@@ -11,7 +11,7 @@ namespace pathed {
     // For later use
     public static string[] arguments;
 
-    public static void Main(string[] args) {
+    public static int Main(string[] args) {
       arguments = args;
       Console.OutputEncoding = Encoding.GetEncoding(Encoding.Default.CodePage);
 
@@ -36,17 +36,18 @@ namespace pathed {
       result.WithParsed<SlimOptions>(opt => Runner.Slim(opt));
       result.WithParsed<SortOptions>(opt => Runner.Sort(opt));
       result.WithNotParsed(errs => DisplayHelp(result, errs));
+      return 0;
     }
 
-    private static void DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs) {
+    private static int DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs) {
       HelpText helpText = null;
       if (errs.IsVersion()) {
         helpText = HelpText.AutoBuild(result);
       } else {
         helpText = HelpText.AutoBuild(result, h => HelpText.DefaultParsingErrorsHandler(result, h), e => e, true);
       }
-      MyConsole.WriteLineError(helpText);
-      Environment.Exit(1);
+      MyConsole.WriteLine(helpText);
+      return 1;
     }
   }
 }

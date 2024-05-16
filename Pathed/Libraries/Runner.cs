@@ -11,69 +11,75 @@ namespace pathed.Libraries {
      * I think reboot is only solution.
      */
 
-    public static void Append(AppendOptions opt) {
+    public static int Append(AppendOptions opt) {
       if (opt.Target == EnvironmentVariableTarget.Machine && !IsAdmin()) Elevate();
       if (opt.Target == EnvironmentVariableTarget.Process) {
         MyConsole.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
-        Environment.Exit(1);
+        return 1;
       }
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Append(opt.Value);
       Environment.SetEnvironmentVariable(opt.Key, envPath.ToString(), opt.Target);
       MyConsole.WriteLine($"\nAppended '{opt.Value}' to '{opt.Key}'.");
+      return 0;
     }
 
-    public static void Prepend(PrependOptions opt) {
+    public static int Prepend(PrependOptions opt) {
       if (opt.Target == EnvironmentVariableTarget.Machine && !IsAdmin()) Elevate();
       if (opt.Target == EnvironmentVariableTarget.Process) {
         MyConsole.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
-        Environment.Exit(1);
+        return 1;
       }
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Prepend(opt.Value);
       Environment.SetEnvironmentVariable(opt.Key, envPath.ToString(), opt.Target);
       MyConsole.WriteLine($"\nPrepended '{opt.Value}' to '{opt.Key}'.");
+      return 0;
     }
 
-    public static void Remove(RemoveOptions opt) {
+    public static int Remove(RemoveOptions opt) {
       if (opt.Target == EnvironmentVariableTarget.Machine && !IsAdmin()) Elevate();
       if (opt.Target == EnvironmentVariableTarget.Process) {
         MyConsole.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
-        Environment.Exit(1);
+        return 1;
       }
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Remove(opt.Value);
       Environment.SetEnvironmentVariable(opt.Key, envPath.ToString(), opt.Target);
       MyConsole.WriteLine($"\nRemoved '{opt.Value}' from '{opt.Key}'.");
+      return 0;
     }
 
-    public static void Show(ShowOptions opt) {
+    public static int Show(ShowOptions opt) {
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Show();
+      return 0;
     }
 
-    public static void Slim(SlimOptions opt) {
+    public static int Slim(SlimOptions opt) {
       if (opt.Target == EnvironmentVariableTarget.Machine && !IsAdmin()) Elevate();
       if (opt.Target == EnvironmentVariableTarget.Process) {
         MyConsole.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
-        Environment.Exit(1);
+        return 1;
       }
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Slim();
       Environment.SetEnvironmentVariable(opt.Key, envPath.ToString(), opt.Target);
       MyConsole.WriteLine($"\nSlimmed '{opt.Key}'.");
+      return 0;
     }
 
-    public static void Sort(SortOptions opt) {
+    public static int Sort(SortOptions opt) {
       if (opt.Target == EnvironmentVariableTarget.Machine && !IsAdmin()) Elevate();
       if (opt.Target == EnvironmentVariableTarget.Process) {
         MyConsole.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
-        Environment.Exit(1);
+        return 1;
       }
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Sort();
       Environment.SetEnvironmentVariable(opt.Key, envPath.ToString(), opt.Target);
       MyConsole.WriteLine($"\nSorted '{opt.Key}'.");
+      return 0;
     }
 
     private static bool IsAdmin() {
