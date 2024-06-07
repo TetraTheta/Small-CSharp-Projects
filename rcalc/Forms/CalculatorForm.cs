@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace rcalc {
-  public partial class Calculator : Form {
+  public partial class CalculatorForm : Form {
 
-    public Calculator(decimal x, decimal y, decimal a) {
+    public CalculatorForm(decimal x, decimal y, decimal a) {
       InitializeComponent();
       _ = new DarkModeCS(this);
 

@@ -16,7 +16,7 @@ namespace rcalc {
 
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
-      Application.Run(new Calculator(x, y, a));
+      Application.Run(new CalculatorForm(x, y, a));
     }
   }
 }
