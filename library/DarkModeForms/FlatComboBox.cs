@@ -59,9 +59,9 @@ namespace DarkModeForms {
           dropDownRect.Top + dropDownRect.Height / 2);
         var arrow = new Point[]
         {
-          new Point(middle.X - 3, middle.Y - 2),
-          new Point(middle.X + 4, middle.Y - 2),
-          new Point(middle.X, middle.Y + 2)
+      new Point(middle.X - 3, middle.Y - 2),
+      new Point(middle.X + 4, middle.Y - 2),
+      new Point(middle.X, middle.Y + 2)
         };
         var ps = new PAINTSTRUCT();
         bool shoulEndPaint = false;
@@ -100,7 +100,7 @@ namespace DarkModeForms {
           //Replaced 'arrow' triangle with a Windows 11's Chevron:
           //using (var b = new SolidBrush(outerBorderColor))
           //{
-          //	g.FillPolygon(b, arrow);
+          //  g.FillPolygon(b, arrow);
           //}
 
           Size cSize = new Size(8, 4); //<- Size of the Chevron: 8x4 px

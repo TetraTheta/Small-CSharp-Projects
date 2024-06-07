@@ -93,15 +93,15 @@ namespace DarkModeForms {
         // a decorative line on top of pages:
         //using (Brush bLineColor = new SolidBrush(LineColor))
         //{
-        //	Rectangle rectangle = ClientRectangle;
-        //	rectangle.Height = 1;
-        //	rectangle.Y = 25;
-        //	g.FillRectangle(bLineColor, rectangle);
+        //  Rectangle rectangle = ClientRectangle;
+        //  rectangle.Height = 1;
+        //  rectangle.Y = 25;
+        //  g.FillRectangle(bLineColor, rectangle);
 
-        //	rectangle = ClientRectangle;
-        //	rectangle.Height = 1;
-        //	rectangle.Y = 26;
-        //	g.FillRectangle(bLineColor, rectangle);
+        //  rectangle = ClientRectangle;
+        //  rectangle.Height = 1;
+        //  rectangle.Y = 26;
+        //  g.FillRectangle(bLineColor, rectangle);
         //}
       } catch { }
     }
@@ -115,25 +115,25 @@ namespace DarkModeForms {
       if (Alignment == TabAlignment.Top) {
         points = new[]
         {
-          new Point(tabRect.Left+3, tabRect.Bottom),
-          new Point(tabRect.Left+3, tabRect.Top + 0),
-          new Point(tabRect.Left + 0, tabRect.Top),
-          new Point(tabRect.Right - 0, tabRect.Top),
-          new Point(tabRect.Right, tabRect.Top + 0),
-          new Point(tabRect.Right, tabRect.Bottom),
-          new Point(tabRect.Left+3, tabRect.Bottom)
-        };
+      new Point(tabRect.Left+3, tabRect.Bottom),
+      new Point(tabRect.Left+3, tabRect.Top + 0),
+      new Point(tabRect.Left + 0, tabRect.Top),
+      new Point(tabRect.Right - 0, tabRect.Top),
+      new Point(tabRect.Right, tabRect.Top + 0),
+      new Point(tabRect.Right, tabRect.Bottom),
+      new Point(tabRect.Left+3, tabRect.Bottom)
+    };
       } else {
         points = new[]
         {
-          new Point(tabRect.Left, tabRect.Top),
-          new Point(tabRect.Right, tabRect.Top),
-          new Point(tabRect.Right, tabRect.Bottom - 0),
-          new Point(tabRect.Right - 0, tabRect.Bottom),
-          new Point(tabRect.Left + 0, tabRect.Bottom),
-          new Point(tabRect.Left, tabRect.Bottom - 0),
-          new Point(tabRect.Left, tabRect.Top)
-        };
+      new Point(tabRect.Left, tabRect.Top),
+      new Point(tabRect.Right, tabRect.Top),
+      new Point(tabRect.Right, tabRect.Bottom - 0),
+      new Point(tabRect.Right - 0, tabRect.Bottom),
+      new Point(tabRect.Left + 0, tabRect.Bottom),
+      new Point(tabRect.Left, tabRect.Bottom - 0),
+      new Point(tabRect.Left, tabRect.Top)
+    };
       }
 
       // Draws the Tab Header:
@@ -153,8 +153,7 @@ namespace DarkModeForms {
       Rectangle rectangleF = tabTextRect;
       rectangleF.Y += 2;
 
-      TextRenderer.DrawText(g, customTabPage.Text, Font, rectangleF,
-         isSelected ? SelectedForeColor : ForeColor);
+      TextRenderer.DrawText(g, customTabPage.Text, Font, rectangleF, isSelected ? SelectedForeColor : ForeColor);
     }
   }
 }

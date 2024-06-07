@@ -14,7 +14,7 @@ namespace pathed.Libraries {
     [Option('e', "envvar", MetaValue = "ENVVAR", HelpText = "Name of the environment variable", Default = "PATH")]
     public string Key { get; set; }
 
-    [Option('t', "target", MetaValue="TARGET", Default = EnvironmentVariableTarget.User)]
+    [Option('t', "target", MetaValue = "TARGET", Default = EnvironmentVariableTarget.User)]
     public EnvironmentVariableTarget Target { get; set; }
 
     // This is for named pipe

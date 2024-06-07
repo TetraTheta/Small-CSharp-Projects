@@ -4,9 +4,7 @@ using System.Diagnostics;
 using System.IO;
 
 namespace ConvertWebP.Libraries {
-
   public class RunPrograms {
-
     public static bool CheckCwebp() {
       string[] paths = Environment.GetEnvironmentVariable("PATH").Split(';');
       foreach (string path in paths) {

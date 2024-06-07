@@ -1,3 +1,4 @@
+using Microsoft.Win32;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -303,7 +304,7 @@ namespace DarkModeForms {
       }
       if (control is TabControl tab) {
         tab.Appearance = TabAppearance.Normal;
-        tab.DrawMode = TabDrawMode.OwnerDrawFixed;
+        tab.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
         tab.DrawItem += (object sender, DrawItemEventArgs e) => {
           //Draw the background of the main control
           using (SolidBrush backColor = new SolidBrush(tab.Parent.BackColor)) {
@@ -368,23 +369,23 @@ namespace DarkModeForms {
           lView.DrawSubItem += (sender, e) => {
             e.DrawDefault = true;
             /*
-						IntPtr headerControl = GetHeaderControl(lView);
-						IntPtr hdc = GetDC(headerControl);
-						Rectangle rc = new Rectangle(
-							e.Bounds.Right, //<- Right instead of Left - offsets the rectangle
-							e.Bounds.Top,
-							e.Bounds.Width,
-							e.Bounds.Height
-						);
-						rc.Width += 200;
+			IntPtr headerControl = GetHeaderControl(lView);
+			IntPtr hdc = GetDC(headerControl);
+			Rectangle rc = new Rectangle(
+			  e.Bounds.Right, //<- Right instead of Left - offsets the rectangle
+			  e.Bounds.Top,
+			  e.Bounds.Width,
+			  e.Bounds.Height
+			);
+			rc.Width += 200;
 
-						using (SolidBrush backBrush = new SolidBrush(OScolors.ControlLight))
-						{
-							e.Graphics.FillRectangle(backBrush, rc);
-						}
+			using (SolidBrush backBrush = new SolidBrush(OScolors.ControlLight))
+			{
+			  e.Graphics.FillRectangle(backBrush, rc);
+			}
 
-						ReleaseDC(headerControl, hdc);
-						*/
+			ReleaseDC(headerControl, hdc);
+			*/
           };
         }
       }
@@ -441,13 +442,13 @@ namespace DarkModeForms {
 
         grid.ColumnHeadersDefaultCellStyle.BackColor = OScolors.Surface;
         grid.ColumnHeadersDefaultCellStyle.ForeColor = OScolors.TextActive;
-        grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = OScolors.Accent;
+        grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = OScolors.AccentOpaque;
         grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
         grid.ColumnHeadersHeight = 140;
 
         grid.RowHeadersDefaultCellStyle.BackColor = OScolors.Surface;
         grid.RowHeadersDefaultCellStyle.ForeColor = OScolors.TextActive;
-        grid.RowHeadersDefaultCellStyle.SelectionBackColor = OScolors.Accent;
+        grid.RowHeadersDefaultCellStyle.SelectionBackColor = OScolors.AccentOpaque;
         grid.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
       }
       if (control is PropertyGrid pGrid) {
@@ -463,24 +464,24 @@ namespace DarkModeForms {
         tree.BorderStyle = BorderStyle.None;
         tree.BackColor = OScolors.Surface;
         /*
-				tree.DrawNode += (object? sender, DrawTreeNodeEventArgs e) =>
-				{
-					if (e.Node.ImageIndex != -1)
-					{
-						Image image = tree.ImageList.Images[e.Node.ImageIndex];
-						using (Graphics g = Graphics.FromImage(image))
-						{
-							g.InterpolationMode = InterpolationMode.HighQualityBilinear;
-							g.CompositingQuality = CompositingQuality.HighQuality;
-							g.SmoothingMode = SmoothingMode.HighQuality;
+		tree.DrawNode += (object? sender, DrawTreeNodeEventArgs e) =>
+		{
+		  if (e.Node.ImageIndex != -1)
+		  {
+			Image image = tree.ImageList.Images[e.Node.ImageIndex];
+			using (Graphics g = Graphics.FromImage(image))
+			{
+			  g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+			  g.CompositingQuality = CompositingQuality.HighQuality;
+			  g.SmoothingMode = SmoothingMode.HighQuality;
 
-							g.DrawImage(DarkModeCS.ChangeToColor(image, OScolors.TextInactive), new Point(0,0));
-						}
-						tree.ImageList.Images[e.Node.ImageIndex] = image;
-					}
-					tree.Invalidate();
-				};
-				*/
+			  g.DrawImage(DarkModeCS.ChangeToColor(image, OScolors.TextInactive), new Point(0,0));
+			}
+			tree.ImageList.Images[e.Node.ImageIndex] = image;
+		  }
+		  tree.Invalidate();
+		};
+		*/
       }
       if (control is TrackBar slider) {
         slider.BackColor = control.Parent.BackColor;
@@ -525,12 +526,34 @@ namespace DarkModeForms {
 
         var colorValue = long.Parse(color.ToString(), System.Globalization.NumberStyles.HexNumber);
 
-        var transparency = (colorValue & 0xFF000000) >> 24;
-        var red = (colorValue & 0x00FF0000) >> 16;
-        var green = (colorValue & 0x0000FF00) >> 8;
-        var blue = colorValue & 0x000000FF;
+        var transparency = (colorValue >> 24) & 0xFF;
+        var red = (colorValue >> 16) & 0xFF;
+        var green = (colorValue >> 8) & 0xFF;
+        var blue = (colorValue >> 0) & 0xFF;
 
         return Color.FromArgb((int)transparency, (int)red, (int)green, (int)blue);
+      } else {
+        return Color.CadetBlue;
+      }
+    }
+
+    /// <summary>Returns the Accent Color used by Windows.</summary>
+    /// <returns>an opaque Color</returns>
+    public static Color GetWindowsAccentOpaqueColor() {
+      DWMCOLORIZATIONcolors colors = new DWMCOLORIZATIONcolors();
+      DwmGetColorizationParameters(ref colors);
+
+      //get the theme --> only if Windows 10 or newer
+      if (IsWindows10orGreater()) {
+        var color = colors.ColorizationColor;
+
+        var colorValue = long.Parse(color.ToString(), System.Globalization.NumberStyles.HexNumber);
+
+        var red = (colorValue >> 16) & 0xFF;
+        var green = (colorValue >> 8) & 0xFF;
+        var blue = (colorValue >> 0) & 0xFF;
+
+        return Color.FromArgb(255, (int)red, (int)green, (int)blue);
       } else {
         return Color.CadetBlue;
       }
@@ -588,7 +611,7 @@ namespace DarkModeForms {
 
         if (_Control != null) {
           _Control.GetType().GetProperty("BorderStyle")?.SetValue(_Control, BorderStyle.None);
-          _Control.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, _Control.Width, _Control.Height, Radius, Radius));
+          _Control.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, _Control.Width, _Control.Height, Radius, Radius));
           _Control.Paint += (object sender, PaintEventArgs e) => {
             //base.OnPaint(e);
             Graphics graph = e.Graphics;
@@ -613,7 +636,7 @@ namespace DarkModeForms {
                   }
                 }
                 graph.SmoothingMode = SmoothingMode.AntiAlias;
-                penBorder.Alignment = PenAlignment.Center;
+                penBorder.Alignment = System.Drawing.Drawing2D.PenAlignment.Center;
                 //if (isFocused) penBorder.Color = borderFocusColor;
 
                 if (underlinedStyle) //Line Style
@@ -651,13 +674,21 @@ namespace DarkModeForms {
         float tG = c.G / 255f;
         float tB = c.B / 255f;
 
+        //System.Drawing.Imaging.ColorMatrix colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][]
+        //{
+        //  new float[] { 0,    0,  0,  0,  0 },
+        //  new float[] { 0,    0,  0,  0,  0 },
+        //  new float[] { 0,    0,  0,  0,  0 },
+        //  new float[] { 0,    0,  0,  1,  0 },  //<- not changing alpha
+        //  new float[] { tR,   tG, tB, 0,  1 }
+        //});
         System.Drawing.Imaging.ColorMatrix colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][]
         {
-          new float[] { 0,    0,  0,  0,  0 },
-          new float[] { 0,    0,  0,  0,  0 },
-          new float[] { 0,    0,  0,  0,  0 },
-          new float[] { 0,    0,  0,  1,  0 },  //<- not changing alpha
-					new float[] { tR,   tG, tB, 0,  1 }
+        new float[] { 1,    0,  0,  0,  0 },
+        new float[] { 0,    1,  0,  0,  0 },
+        new float[] { 0,    0,  1,  0,  0 },
+        new float[] { 0,    0,  0,  1,  0 },  //<- not changing alpha
+        new float[] { tR,   tG, tB, 0,  1 }
         });
 
         System.Drawing.Imaging.ImageAttributes attributes = new System.Drawing.Imaging.ImageAttributes();
@@ -669,7 +700,7 @@ namespace DarkModeForms {
       return bmp2;
     }
 
-    public static Image ChangeToColor(Image bmp, Color c) => ChangeToColor((Bitmap)bmp, c);
+    public static Image ChangeToColor(Image bmp, Color c) => (Image)ChangeToColor((Bitmap)bmp, c);
 
     #endregion Public Methods
 
@@ -679,17 +710,17 @@ namespace DarkModeForms {
     /// <param name="control"></param>
     private static void ApplySystemDarkTheme(Control control = null) {
       /*
-				DWMWA_USE_IMMERSIVE_DARK_MODE:   https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
+		DWMWA_USE_IMMERSIVE_DARK_MODE:   https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
 
-				Use with DwmSetWindowAttribute. Allows the window frame for this window to be drawn in dark mode colors when the dark mode system setting is enabled.
-				For compatibility reasons, all windows default to light mode regardless of the system setting.
-				The pvAttribute parameter points to a value of type BOOL. TRUE to honor dark mode for the window, FALSE to always use light mode.
+		Use with DwmSetWindowAttribute. Allows the window frame for this window to be drawn in dark mode colors when the dark mode system setting is enabled.
+		For compatibility reasons, all windows default to light mode regardless of the system setting.
+		The pvAttribute parameter points to a value of type BOOL. TRUE to honor dark mode for the window, FALSE to always use light mode.
 
-				This value is supported starting with Windows 11 Build 22000.
+		This value is supported starting with Windows 11 Build 22000.
 
-				SetWindowTheme:     https://learn.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-setwindowtheme
-				Causes a window to use a different set of visual style information than its class normally uses.
-			 */
+		SetWindowTheme:     https://learn.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-setwindowtheme
+		Causes a window to use a different set of visual style information than its class normally uses.
+	   */
       int[] DarkModeOn = new[] { 0x01 }; //<- 1=True, 0=False
 
       SetWindowTheme(control.Handle, "DarkMode_Explorer", null);
@@ -712,10 +743,16 @@ namespace DarkModeForms {
 
     private static int WindowsVersion() {
       //for .Net4.8 and Minor
-      int result = 10;
-      var reg = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
-      string[] productName = reg.GetValue("ProductName").ToString().Split((char)32);
-      int.TryParse(productName[1], out result);
+      int result;
+      try {
+        var reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
+        string[] productName = reg.GetValue("ProductName").ToString().Split((char)32);
+        int.TryParse(productName[1], out result);
+      } catch (Exception) {
+        OperatingSystem os = Environment.OSVersion;
+        result = os.Version.Major;
+      }
+
       return result;
 
       //fixed .Net6
@@ -759,58 +796,63 @@ namespace DarkModeForms {
     }
 
     /// <summary>For the very back of the Window</summary>
-    public Color Background { get; set; } = SystemColors.Control;
+    public System.Drawing.Color Background { get; set; } = SystemColors.Control;
 
     /// <summary>For Borders around the Background</summary>
-    public Color BackgroundDark { get; set; } = SystemColors.ControlDark;
+    public System.Drawing.Color BackgroundDark { get; set; } = SystemColors.ControlDark;
 
     /// <summary>For hightlights over the Background</summary>
-    public Color BackgroundLight { get; set; } = SystemColors.ControlLight;
+    public System.Drawing.Color BackgroundLight { get; set; } = SystemColors.ControlLight;
 
     /// <summary>For Container above the Background</summary>
-    public Color Surface { get; set; } = SystemColors.ControlLightLight;
+    public System.Drawing.Color Surface { get; set; } = SystemColors.ControlLightLight;
 
     /// <summary>For Borders around the Surface</summary>
-    public Color SurfaceDark { get; set; } = SystemColors.ControlLight;
+    public System.Drawing.Color SurfaceDark { get; set; } = SystemColors.ControlLight;
 
     /// <summary>For Highligh over the Surface</summary>
-    public Color SurfaceLight { get; set; } = Color.White;
+    public System.Drawing.Color SurfaceLight { get; set; } = Color.White;
 
     /// <summary>For Main Texts</summary>
-    public Color TextActive { get; set; } = SystemColors.ControlText;
+    public System.Drawing.Color TextActive { get; set; } = SystemColors.ControlText;
 
     /// <summary>For Inactive Texts</summary>
-    public Color TextInactive { get; set; } = SystemColors.GrayText;
+    public System.Drawing.Color TextInactive { get; set; } = SystemColors.GrayText;
 
     /// <summary>For Hightligh Texts</summary>
-    public Color TextInAccent { get; set; } = SystemColors.HighlightText;
+    public System.Drawing.Color TextInAccent { get; set; } = SystemColors.HighlightText;
 
     /// <summary>For the background of any Control</summary>
-    public Color Control { get; set; } = SystemColors.ButtonFace;
+    public System.Drawing.Color Control { get; set; } = SystemColors.ButtonFace;
 
     /// <summary>For Bordes of any Control</summary>
-    public Color ControlDark { get; set; } = SystemColors.ButtonShadow;
+    public System.Drawing.Color ControlDark { get; set; } = SystemColors.ButtonShadow;
 
     /// <summary>For Highlight elements in a Control</summary>
-    public Color ControlLight { get; set; } = SystemColors.ButtonHighlight;
+    public System.Drawing.Color ControlLight { get; set; } = SystemColors.ButtonHighlight;
 
     /// <summary>Windows 10+ Chosen Accent Color</summary>
-    public Color Accent { get; set; } = DarkModeCS.GetWindowsAccentColor();
+    public System.Drawing.Color Accent { get; set; } = DarkModeCS.GetWindowsAccentColor();
 
-    public Color AccentDark { get { return ControlPaint.Dark(Accent); } }
-    public Color AccentLight { get { return ControlPaint.Light(Accent); } }
+    public System.Drawing.Color AccentOpaque { get; set; } = DarkModeCS.GetWindowsAccentOpaqueColor();
+
+    public System.Drawing.Color AccentDark { get { return ControlPaint.Dark(Accent); } }
+
+    public System.Drawing.Color AccentLight { get { return ControlPaint.Light(Accent); } }
 
     /// <summary>the color displayed most frequently across your app's screens and components.</summary>
-    public Color Primary { get; set; } = SystemColors.Highlight;
+    public System.Drawing.Color Primary { get; set; } = SystemColors.Highlight;
 
-    public Color PrimaryDark { get { return ControlPaint.Dark(Primary); } }
-    public Color PrimaryLight { get { return ControlPaint.Light(Primary); } }
+    public System.Drawing.Color PrimaryDark { get { return ControlPaint.Dark(Primary); } }
+
+    public System.Drawing.Color PrimaryLight { get { return ControlPaint.Light(Primary); } }
 
     /// <summary>to accent select parts of your UI.</summary>
-    public Color Secondary { get; set; } = SystemColors.HotTrack;
+    public System.Drawing.Color Secondary { get; set; } = SystemColors.HotTrack;
 
-    public Color SecondaryDark { get { return ControlPaint.Dark(Secondary); } }
-    public Color SecondaryLight { get { return ControlPaint.Light(Secondary); } }
+    public System.Drawing.Color SecondaryDark { get { return ControlPaint.Dark(Secondary); } }
+
+    public System.Drawing.Color SecondaryLight { get { return ControlPaint.Light(Secondary); } }
   }
 
   /* Custom Renderers for Menus and ToolBars */
@@ -838,9 +880,9 @@ namespace DarkModeForms {
 
       // Center the titlebar grip.
       //g.DrawImage(
-      //	titlebarGrip,
-      //	new Point(rect.X + ((rect.Width / 2) - (titlebarGrip.Width / 2)),
-      //	rect.Y + 1));
+      //  titlebarGrip,
+      //  new Point(rect.X + ((rect.Width / 2) - (titlebarGrip.Width / 2)),
+      //  rect.Y + 1));
     }
 
     // This method handles the RenderGrip event.
@@ -1034,7 +1076,7 @@ namespace DarkModeForms {
       Color gradientEnd = MyColors.Background; // Color.FromArgb(125, 165, 224);
 
       bool DrawIt = false;
-      var _menu = e.Item;
+      var _menu = e.Item as ToolStripItem;
       if (_menu.Pressed) {
         gradientBegin = MyColors.Control; // Color.FromArgb(254, 128, 62);
         gradientEnd = MyColors.Control; // Color.FromArgb(255, 223, 154);
@@ -1070,6 +1112,8 @@ namespace DarkModeForms {
           e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
           e.Graphics.DrawImage(adjustedImage, e.ImageRectangle);
         }
+      } else {
+        base.OnRenderItemImage(e);
       }
     }
   }
@@ -1079,7 +1123,7 @@ namespace DarkModeForms {
 
     public CustomColorTable(OSThemeColors _Colors) {
       Colors = _Colors;
-      UseSystemColors = false;
+      base.UseSystemColors = false;
     }
 
     public override Color ImageMarginGradientBegin {

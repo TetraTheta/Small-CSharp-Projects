@@ -1,3 +1,3 @@
 # Small Projects
 
-These are small projects for specific purposes.
+Small, simple projects for specific purposes. Only support Windows OS.

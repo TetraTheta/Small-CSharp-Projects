@@ -1,4 +1,5 @@
 using ConvertWebP.Properties;
+using SortLib;
 using System.IO;
 using System.Linq;
 
@@ -9,7 +10,7 @@ namespace ConvertWebP.Libraries {
         return new string[] { Path.GetFullPath(path) };
       } else if (Directory.Exists(path)) {
         string[] extensions = { ".bmp", ".jpg", ".jpeg", ".png", ".webp" };
-        return NaturalSort.Sort(Directory.GetFiles(path).Where(file => extensions.Contains(Path.GetExtension(file).ToLower())).ToArray());
+        return Natural.Sort(Directory.GetFiles(path).Where(file => extensions.Contains(Path.GetExtension(file).ToLower())).ToArray());
       } else {
         Dialogs.ShowError(Resources.ErrInvalidPath + "\n" + path);
         return null;

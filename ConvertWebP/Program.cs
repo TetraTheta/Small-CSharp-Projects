@@ -7,9 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 namespace ConvertWebP {
-
   internal static class Program {
-
     [STAThread]
     private static void Main(string[] args) {
       // TODO: How can I localize this application?

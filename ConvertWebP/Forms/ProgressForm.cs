@@ -9,9 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ConvertWebP {
-
   public partial class ProgressForm : Form {
-    private DarkModeCS DM = null;
     private int completedTasks = 0;
     private readonly int totalTasks;
 
@@ -19,7 +17,7 @@ namespace ConvertWebP {
       InitializeComponent();
       Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
       Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
-      DM = new DarkModeCS(this);
+      _ = new DarkModeCS(this);
       Show();
 
       totalTasks = files.Length;

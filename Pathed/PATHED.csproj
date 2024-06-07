@@ -64,6 +64,7 @@
   <ItemGroup>
     <None Include=".editorconfig" />
     <None Include="App.config" />
+    <None Include="CodeMaid.config" />
     <None Include="ILMerge.props" />
     <None Include="packages.config" />
   </ItemGroup>

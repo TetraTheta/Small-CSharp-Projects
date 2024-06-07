@@ -4,7 +4,6 @@ using System;
 using System.Media;
 
 namespace ConvertWebP.Libraries {
-
   public class Dialogs {
     public static void ShowError(Exception ex, bool doExit = true) {
       SystemSounds.Exclamation.Play();

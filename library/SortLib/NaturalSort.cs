@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace ConvertWebP.Libraries {
-
-  internal class NaturalSort {
-
+namespace SortLib {
+  public class Natural {
     [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
     private static extern int StrCmpLogicalW(string psz1, string psz2);
 
@@ -15,7 +13,6 @@ namespace ConvertWebP.Libraries {
     }
 
     private class NaturalComparer : IComparer<string> {
-
       public int Compare(string x, string y) {
         return StrCmpLogicalW(x, y);
       }
