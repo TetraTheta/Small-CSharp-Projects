@@ -1,7 +1,11 @@
 using Microsoft.Win32;
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -172,7 +176,7 @@ namespace DarkModeForms {
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
     public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
 
-    [DllImport("DwmApi")]
+    [DllImport("dwmapi.dll")]
     public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, int[] attrValue, int attrSize);
 
     [DllImport("dwmapi.dll")]
@@ -184,7 +188,7 @@ namespace DarkModeForms {
     [DllImport("dwmapi.dll", EntryPoint = "#127")]
     public static extern void DwmGetColorizationParameters(ref DWMCOLORIZATIONcolors colors);
 
-    [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
+    [DllImport("gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
     private static extern IntPtr CreateRoundRectRgn
     (
       int nLeftRect,     // x-coordinate of upper-left corner
@@ -195,10 +199,10 @@ namespace DarkModeForms {
       int nHeightEllipse // width of ellipse
     );
 
-    [DllImport("user32")]
+    [DllImport("user32.dll")]
     private static extern IntPtr GetDC(IntPtr hwnd);
 
-    [DllImport("user32")]
+    [DllImport("user32.dll")]
     private static extern IntPtr ReleaseDC(IntPtr hwnd, IntPtr hdc);
 
     public static IntPtr GetHeaderControl(ListView list) {
@@ -207,6 +211,18 @@ namespace DarkModeForms {
     }
 
     #endregion Win32 API Declarations
+
+    #region Static Local Members
+
+    /// <summary>
+    /// prevents applying a theme multiple times to the same control
+    /// without this, it happens at least is some MDI forms
+    /// currently, only Key is being used, the Value is not.
+    /// Using ConditionalWeakTable because I found no suitable ISet<Control> implementation
+    /// </summary>
+    private static readonly ConditionalWeakTable<Control, object> ControlsProcessed = new ConditionalWeakTable<Control, object>();
+
+    #endregion Static Local Members
 
     #region Public Members
 
@@ -219,7 +235,7 @@ namespace DarkModeForms {
     /// <summary>Option to make all Panels Borders Rounded</summary>
     public bool RoundedPanels { get; set; } = false;
 
-    /// <summary>The PArent form for them all.</summary>
+    /// <summary>The Parent form for them all.</summary>
     public Form OwnerForm { get; set; }
 
     /// <summary>Windows Colors. Can be customized.</summary>
@@ -238,7 +254,7 @@ namespace DarkModeForms {
       OwnerForm = _Form;
       ColorizeIcons = _ColorizeIcons;
       RoundedPanels = _RoundedPanels;
-      IsDarkMode = GetWindowsColorMode() <= 0 ? true : false;
+      IsDarkMode = GetWindowsColorMode() <= 0;
       OScolors = GetSystemColors(OwnerForm);
 
       if (IsDarkMode && OScolors != null) {
@@ -260,6 +276,10 @@ namespace DarkModeForms {
     /// <summary>Recursively apply the Colors from 'OScolors' to the Control and all its childs.</summary>
     /// <param name="control">Can be a Form or any Winforms Control.</param>
     public void ThemeControl(Control control) {
+      //prevent applying a theme multiple times to the same control
+      //without this, it happens at least is some MDI forms
+      if (ControlsProcessed.TryGetValue(control, out object _)) return;
+      ControlsProcessed.Add(control, null);
       BorderStyle BStyle = (IsDarkMode ? BorderStyle.FixedSingle : BorderStyle.Fixed3D);
       FlatStyle FStyle = (IsDarkMode ? FlatStyle.Flat : FlatStyle.Standard);
 
@@ -423,19 +443,49 @@ namespace DarkModeForms {
         };
       }
       if (control is ToolStrip toolBar) {
-        toolBar.GripStyle = ToolStripGripStyle.Hidden;
+        //commented out because it would just freeze the toolstrips with no obvious benefit:
+        //toolBar.GripStyle = ToolStripGripStyle.Hidden;
         toolBar.RenderMode = ToolStripRenderMode.Professional;
         toolBar.Renderer = new MyRenderer(new CustomColorTable(OScolors), ColorizeIcons) { MyColors = OScolors };
+      }
+      if (control is ToolStripPanel toolStripPanel) {
+        //empty area around ToolStrip
+        toolStripPanel.BackColor = OScolors.Surface;
+      }
+      if (control is MdiClient mdiClient) {
+        //empty area of MDI container window
+        mdiClient.BackColor = OScolors.Surface;
       }
       if (control is ContextMenuStrip cMenu) {
         cMenu.RenderMode = ToolStripRenderMode.Professional;
         cMenu.Renderer = new MyRenderer(new CustomColorTable(OScolors), ColorizeIcons) { MyColors = OScolors };
+      }
+      if (control is ToolStripDropDown toolStripDropDown) {
+        toolStripDropDown.Opening += TSDD_Opening;
       }
       if (control is DataGridView grid) {
         grid.EnableHeadersVisualStyles = false;
         grid.BorderStyle = BorderStyle.FixedSingle;
         grid.BackgroundColor = OScolors.Control;
         grid.GridColor = OScolors.Control;
+
+        //paint the bottom right corner where the scrollbars meet
+        grid.Paint += (object sender, PaintEventArgs e) => {
+          DataGridView dgv = sender as DataGridView;
+          //get the value of dgv.HorizontalScrollBar protected property
+          HScrollBar hs = (HScrollBar)typeof(DataGridView).GetProperty("HorizontalScrollBar", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(dgv);
+          if (hs.Visible) {
+            //get the value of dgv.VerticalScrollBar protected property
+            VScrollBar vs = (VScrollBar)typeof(DataGridView).GetProperty("VerticalScrollBar", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(dgv);
+            if (vs.Visible) {
+              //only when both the scrollbars are visible, do the actual painting
+              Brush brush = new SolidBrush(OScolors.SurfaceDark);
+              var w = vs.Size.Width;
+              var h = hs.Size.Height;
+              e.Graphics.FillRectangle(brush, dgv.ClientRectangle.X + dgv.ClientRectangle.Width - w - 1, dgv.ClientRectangle.Y + dgv.ClientRectangle.Height - h - 1, w, h);
+            }
+          }
+        };
 
         grid.DefaultCellStyle.BackColor = OScolors.Surface;
         grid.DefaultCellStyle.ForeColor = OScolors.TextActive;
@@ -496,8 +546,24 @@ namespace DarkModeForms {
       }
     }
 
-    private void Tree_DrawNode(object sender, DrawTreeNodeEventArgs e) {
-      throw new NotImplementedException();
+    /// <summary>
+    /// handle hierarchical context menus (otherwise, only the root level gets themed)
+    /// </summary>
+    private void TSDD_Opening(object sender, CancelEventArgs e) {
+      if (!(sender is ToolStripDropDown tsdd)) return; //should not occur
+      foreach (ToolStripMenuItem toolStripMenuItem in tsdd.Items.OfType<ToolStripMenuItem>()) {
+        toolStripMenuItem.DropDownOpening += TSMI_DropDownOpening;
+      }
+    }
+
+    /// <summary>
+    /// handle hierarchical context menus (otherwise, only the root level gets themed)
+    /// </summary>
+    private void TSMI_DropDownOpening(object sender, EventArgs e) {
+      if (!(sender is ToolStripMenuItem tsmi)) return; //should not occur
+      if (tsmi.DropDown.Items.Count > 0) ThemeControl(tsmi.DropDown);
+      //once processed, remove itself to prevent multiple executions (when user leaves and reenters the sub-menu)
+      tsmi.DropDownOpening -= TSMI_DropDownOpening;
     }
 
     /// <summary>Returns Windows Color Mode for Applications.
@@ -709,18 +775,17 @@ namespace DarkModeForms {
     /// <summary>Attemps to apply Window's Dark Style to the Control and all its childs.</summary>
     /// <param name="control"></param>
     private static void ApplySystemDarkTheme(Control control = null) {
-      /*
-		DWMWA_USE_IMMERSIVE_DARK_MODE:   https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
+      // DWMWA_USE_IMMERSIVE_DARK_MODE: https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
+      //
+      // Use with DwmSetWindowAttribute.Allows the window frame for this window to be drawn in dark mode colors when the dark mode system setting is enabled.
+      // For compatibility reasons, all windows default to light mode regardless of the system setting.
+      //
+      // The pvAttribute parameter points to a value of type BOOL.TRUE to honor dark mode for the window, FALSE to always use light mode.
+      // This value is supported starting with Windows 11 Build 22000.
+      //
+      // SetWindowTheme: https://learn.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-setwindowtheme
+      // Causes a window to use a different set of visual style information than its class normally uses.
 
-		Use with DwmSetWindowAttribute. Allows the window frame for this window to be drawn in dark mode colors when the dark mode system setting is enabled.
-		For compatibility reasons, all windows default to light mode regardless of the system setting.
-		The pvAttribute parameter points to a value of type BOOL. TRUE to honor dark mode for the window, FALSE to always use light mode.
-
-		This value is supported starting with Windows 11 Build 22000.
-
-		SetWindowTheme:     https://learn.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-setwindowtheme
-		Causes a window to use a different set of visual style information than its class normally uses.
-	   */
       int[] DarkModeOn = new[] { 0x01 }; //<- 1=True, 0=False
 
       SetWindowTheme(control.Handle, "DarkMode_Explorer", null);
@@ -791,68 +856,67 @@ namespace DarkModeForms {
 
   /// <summary>Windows 10+ System Colors for Clear Color Mode.</summary>
   public class OSThemeColors {
-
     public OSThemeColors() {
     }
 
     /// <summary>For the very back of the Window</summary>
-    public System.Drawing.Color Background { get; set; } = SystemColors.Control;
+    public Color Background { get; set; } = SystemColors.Control;
 
     /// <summary>For Borders around the Background</summary>
-    public System.Drawing.Color BackgroundDark { get; set; } = SystemColors.ControlDark;
+    public Color BackgroundDark { get; set; } = SystemColors.ControlDark;
 
     /// <summary>For hightlights over the Background</summary>
-    public System.Drawing.Color BackgroundLight { get; set; } = SystemColors.ControlLight;
+    public Color BackgroundLight { get; set; } = SystemColors.ControlLight;
 
     /// <summary>For Container above the Background</summary>
-    public System.Drawing.Color Surface { get; set; } = SystemColors.ControlLightLight;
+    public Color Surface { get; set; } = SystemColors.ControlLightLight;
 
     /// <summary>For Borders around the Surface</summary>
-    public System.Drawing.Color SurfaceDark { get; set; } = SystemColors.ControlLight;
+    public Color SurfaceDark { get; set; } = SystemColors.ControlLight;
 
     /// <summary>For Highligh over the Surface</summary>
-    public System.Drawing.Color SurfaceLight { get; set; } = Color.White;
+    public Color SurfaceLight { get; set; } = Color.White;
 
     /// <summary>For Main Texts</summary>
-    public System.Drawing.Color TextActive { get; set; } = SystemColors.ControlText;
+    public Color TextActive { get; set; } = SystemColors.ControlText;
 
     /// <summary>For Inactive Texts</summary>
-    public System.Drawing.Color TextInactive { get; set; } = SystemColors.GrayText;
+    public Color TextInactive { get; set; } = SystemColors.GrayText;
 
     /// <summary>For Hightligh Texts</summary>
-    public System.Drawing.Color TextInAccent { get; set; } = SystemColors.HighlightText;
+    public Color TextInAccent { get; set; } = SystemColors.HighlightText;
 
     /// <summary>For the background of any Control</summary>
-    public System.Drawing.Color Control { get; set; } = SystemColors.ButtonFace;
+    public Color Control { get; set; } = SystemColors.ButtonFace;
 
     /// <summary>For Bordes of any Control</summary>
-    public System.Drawing.Color ControlDark { get; set; } = SystemColors.ButtonShadow;
+    public Color ControlDark { get; set; } = SystemColors.ButtonShadow;
 
     /// <summary>For Highlight elements in a Control</summary>
-    public System.Drawing.Color ControlLight { get; set; } = SystemColors.ButtonHighlight;
+    public Color ControlLight { get; set; } = SystemColors.ButtonHighlight;
 
     /// <summary>Windows 10+ Chosen Accent Color</summary>
-    public System.Drawing.Color Accent { get; set; } = DarkModeCS.GetWindowsAccentColor();
+    public Color Accent { get; set; } = DarkModeCS.GetWindowsAccentColor();
 
-    public System.Drawing.Color AccentOpaque { get; set; } = DarkModeCS.GetWindowsAccentOpaqueColor();
+    public Color AccentOpaque { get; set; } = DarkModeCS.GetWindowsAccentOpaqueColor();
 
-    public System.Drawing.Color AccentDark { get { return ControlPaint.Dark(Accent); } }
+    public Color AccentDark { get { return ControlPaint.Dark(Accent); } }
 
-    public System.Drawing.Color AccentLight { get { return ControlPaint.Light(Accent); } }
+    public Color AccentLight { get { return ControlPaint.Light(Accent); } }
 
     /// <summary>the color displayed most frequently across your app's screens and components.</summary>
-    public System.Drawing.Color Primary { get; set; } = SystemColors.Highlight;
+    public Color Primary { get; set; } = SystemColors.Highlight;
 
-    public System.Drawing.Color PrimaryDark { get { return ControlPaint.Dark(Primary); } }
+    public Color PrimaryDark { get { return ControlPaint.Dark(Primary); } }
 
-    public System.Drawing.Color PrimaryLight { get { return ControlPaint.Light(Primary); } }
+    public Color PrimaryLight { get { return ControlPaint.Light(Primary); } }
 
     /// <summary>to accent select parts of your UI.</summary>
-    public System.Drawing.Color Secondary { get; set; } = SystemColors.HotTrack;
+    public Color Secondary { get; set; } = SystemColors.HotTrack;
 
-    public System.Drawing.Color SecondaryDark { get { return ControlPaint.Dark(Secondary); } }
+    public Color SecondaryDark { get { return ControlPaint.Dark(Secondary); } }
 
-    public System.Drawing.Color SecondaryLight { get { return ControlPaint.Light(Secondary); } }
+    public Color SecondaryLight { get { return ControlPaint.Light(Secondary); } }
   }
 
   /* Custom Renderers for Menus and ToolBars */
@@ -969,7 +1033,7 @@ namespace DarkModeForms {
       Color gradientBegin = MyColors.Background; // Color.FromArgb(203, 225, 252);
       Color gradientEnd = MyColors.Background;
 
-      Pen BordersPencil = new Pen(MyColors.Background);
+      //Pen BordersPencil = new Pen(MyColors.Background);
 
       //1. Determine the colors to use:
       if (e.Item.Pressed) {
