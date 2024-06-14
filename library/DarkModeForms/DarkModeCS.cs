@@ -174,7 +174,10 @@ namespace DarkModeForms {
     public const int EM_SETCUEBANNER = 5377;
 
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
+    public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, [MarshalAs(UnmanagedType.LPWStr)] string lParam);
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
     [DllImport("dwmapi.dll")]
     public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, int[] attrValue, int attrSize);
@@ -388,24 +391,21 @@ namespace DarkModeForms {
           lView.DrawItem += (sender, e) => { e.DrawDefault = true; };
           lView.DrawSubItem += (sender, e) => {
             e.DrawDefault = true;
-            /*
-			IntPtr headerControl = GetHeaderControl(lView);
-			IntPtr hdc = GetDC(headerControl);
-			Rectangle rc = new Rectangle(
-			  e.Bounds.Right, //<- Right instead of Left - offsets the rectangle
-			  e.Bounds.Top,
-			  e.Bounds.Width,
-			  e.Bounds.Height
-			);
-			rc.Width += 200;
+            //IntPtr headerControl = GetHeaderControl(lView);
+            //IntPtr hdc = GetDC(headerControl);
+            //Rectangle rc = new Rectangle(
+            //  e.Bounds.Right, //<- Right instead of Left - offsets the rectangle
+            //  e.Bounds.Top,
+            //  e.Bounds.Width,
+            //  e.Bounds.Height
+            //);
+            //rc.Width += 200;
 
-			using (SolidBrush backBrush = new SolidBrush(OScolors.ControlLight))
-			{
-			  e.Graphics.FillRectangle(backBrush, rc);
-			}
+            //using (SolidBrush backBrush = new SolidBrush(OScolors.ControlLight)) {
+            //  e.Graphics.FillRectangle(backBrush, rc);
+            //}
 
-			ReleaseDC(headerControl, hdc);
-			*/
+            //ReleaseDC(headerControl, hdc);
           };
         }
       }
@@ -513,32 +513,26 @@ namespace DarkModeForms {
       if (control is TreeView tree) {
         tree.BorderStyle = BorderStyle.None;
         tree.BackColor = OScolors.Surface;
-        /*
-		tree.DrawNode += (object? sender, DrawTreeNodeEventArgs e) =>
-		{
-		  if (e.Node.ImageIndex != -1)
-		  {
-			Image image = tree.ImageList.Images[e.Node.ImageIndex];
-			using (Graphics g = Graphics.FromImage(image))
-			{
-			  g.InterpolationMode = InterpolationMode.HighQualityBilinear;
-			  g.CompositingQuality = CompositingQuality.HighQuality;
-			  g.SmoothingMode = SmoothingMode.HighQuality;
-
-			  g.DrawImage(DarkModeCS.ChangeToColor(image, OScolors.TextInactive), new Point(0,0));
-			}
-			tree.ImageList.Images[e.Node.ImageIndex] = image;
-		  }
-		  tree.Invalidate();
-		};
-		*/
+        //tree.DrawNode += (object? sender, DrawTreeNodeEventArgs e) => {
+        //  if (e.Node.ImageIndex != -1) {
+        //    Image image = tree.ImageList.Images[e.Node.ImageIndex];
+        //    using (Graphics g = Graphics.FromImage(image)) {
+        //      g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+        //      g.CompositingQuality = CompositingQuality.HighQuality;
+        //      g.SmoothingMode = SmoothingMode.HighQuality;
+        //      g.DrawImage(DarkModeCS.ChangeToColor(image, OScolors.TextInactive), new Point(0, 0));
+        //    }
+        //    tree.ImageList.Images[e.Node.ImageIndex] = image;
+        //  }
+        //  tree.Invalidate();
+        //};
       }
       if (control is TrackBar slider) {
         slider.BackColor = control.Parent.BackColor;
       }
-
-      if (control.ContextMenuStrip != null)
+      if (control.ContextMenuStrip != null) {
         ThemeControl(control.ContextMenuStrip);
+      }
 
       foreach (Control childControl in control.Controls) {
         // Recursively process its children
