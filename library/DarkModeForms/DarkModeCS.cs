@@ -1119,11 +1119,13 @@ namespace DarkModeForms {
       base.OnRenderItemBackground(e);
 
       // Only draw border for ComboBox items
+#pragma warning disable CS0184
       if (e.Item is ComboBox) {
         Rectangle rect = new Rectangle(Point.Empty, e.Item.Size);
         e.Graphics.DrawRectangle(new Pen(MyColors.ControlLight, 1), rect);
       }
     }
+#pragma warning restore CS0184
 
     // For Menu Items BackColor:
     protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e) {
