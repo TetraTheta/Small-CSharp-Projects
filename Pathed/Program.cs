@@ -1,11 +1,12 @@
 using CommandLine;
 using CommandLine.Text;
-using pathed.Libraries;
+using Pathed.Libraries;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static MyConsole.MyConsole;
 
-namespace pathed {
+namespace Pathed {
   internal class Program {
 
     // For later use
@@ -46,7 +47,7 @@ namespace pathed {
       } else {
         helpText = HelpText.AutoBuild(result, h => HelpText.DefaultParsingErrorsHandler(result, h), e => e, true);
       }
-      MyConsole.WriteLine(helpText);
+      WriteLine(helpText);
       return 1;
     }
   }

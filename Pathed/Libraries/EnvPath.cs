@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace pathed.Libraries {
+namespace Pathed.Libraries {
   public class EnvPath {
     private readonly string key;
     private readonly string target;

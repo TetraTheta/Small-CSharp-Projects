@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace pathed.Libraries {
+namespace Pathed.Libraries {
   [Verb("append", HelpText = "Append variable to environment variable")]
   public class AppendOptions {
 
@@ -30,7 +30,7 @@ namespace pathed.Libraries {
       return sb.ToString();
     }
 
-    [Usage(ApplicationAlias = "pathed.exe")]
+    [Usage(ApplicationAlias = "Pathed.exe")]
     public static IEnumerable<Example> Examples {
       get {
         yield return new Example("Append '%LocalAppData%\\Program\\MyProgram' to 'PATH' in User", new AppendOptions { Value = @"%LocalAppData%\Program\MyProgram", Key = "PATH" });
@@ -64,7 +64,7 @@ namespace pathed.Libraries {
       return sb.ToString();
     }
 
-    [Usage(ApplicationAlias = "pathed.exe")]
+    [Usage(ApplicationAlias = "Pathed.exe")]
     public static IEnumerable<Example> Examples {
       get {
         yield return new Example("Prepend '%LocalAppData%\\Program\\MyProgram' to 'PATH' in User", new PrependOptions { Value = @"%LocalAppData%\Program\MyProgram", Key = "PATH" });
@@ -98,7 +98,7 @@ namespace pathed.Libraries {
       return sb.ToString();
     }
 
-    [Usage(ApplicationAlias = "pathed.exe")]
+    [Usage(ApplicationAlias = "Pathed.exe")]
     public static IEnumerable<Example> Examples {
       get {
         yield return new Example("Remove '%LocalAppData%\\Program\\MyProgram' from 'PATH' in User", new RemoveOptions { Value = @"%LocalAppData%\Program\MyProgram", Key = "PATH" });
@@ -128,7 +128,7 @@ namespace pathed.Libraries {
       return sb.ToString();
     }
 
-    [Usage(ApplicationAlias = "pathed.exe")]
+    [Usage(ApplicationAlias = "Pathed.exe")]
     public static IEnumerable<Example> Examples {
       get {
         yield return new Example("Show paths of 'PATH' in User", new ShowOptions { Key = "PATH" });
@@ -158,7 +158,7 @@ namespace pathed.Libraries {
       return sb.ToString();
     }
 
-    [Usage(ApplicationAlias = "pathed.exe")]
+    [Usage(ApplicationAlias = "Pathed.exe")]
     public static IEnumerable<Example> Examples {
       get {
         yield return new Example("Remove duplicated or invalid entries of 'PATH' in User", new SlimOptions { Key = "PATH" });
@@ -188,7 +188,7 @@ namespace pathed.Libraries {
       return sb.ToString();
     }
 
-    [Usage(ApplicationAlias = "pathed.exe")]
+    [Usage(ApplicationAlias = "Pathed.exe")]
     public static IEnumerable<Example> Examples {
       get {
         yield return new Example("Sort entries of 'PATH' in User", new SortOptions { Key = "PATH" });

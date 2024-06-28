@@ -1,8 +1,16 @@
 using System;
 
-namespace pathed.Libraries {
+namespace MyConsole {
   public static class MyConsole {
-    // TODO: Implement sending string to named pipe for later use
+    public static void Error(string text, string header = "ERROR", ConsoleColor color = ConsoleColor.Red) {
+      Write(header + " ", color);
+      WriteLine(text);
+    }
+
+    public static void Info(string text, string header = "INFO", ConsoleColor color = ConsoleColor.Green) {
+      Write(header + " ", color);
+      WriteLine(text);
+    }
 
     public static void Write(string text) {
       Write(text, Console.ForegroundColor);

@@ -12,7 +12,7 @@ namespace SortLib {
       return arr;
     }
 
-    private class NaturalComparer : IComparer<string> {
+    public class NaturalComparer : IComparer<string> {
       public int Compare(string x, string y) {
         return StrCmpLogicalW(x, y);
       }

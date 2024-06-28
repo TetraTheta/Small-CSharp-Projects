@@ -1,7 +1,7 @@
 using System;
 using System.Security.Principal;
 
-namespace pathed.Libraries {
+namespace Pathed.Libraries {
   public static class Runner {
     /**
      * For slow operation:

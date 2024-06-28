@@ -6,10 +6,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B98738BE-3206-4AE6-B91B-74F6C46995A1}</ProjectGuid>
+    <ProjectGuid>{5CE028D0-CDF5-43B9-AC3D-9F4E808C5E43}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Pathed</RootNamespace>
-    <AssemblyName>pathed</AssemblyName>
+    <RootNamespace>ImageConverter</RootNamespace>
+    <AssemblyName>ic</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -37,44 +37,72 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Pathed.Program</StartupObject>
+    <ApplicationIcon>Resources\MainIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>ImageConverter.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommandLine, Version=2.9.1.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
       <HintPath>packages\CommandLineParser.2.9.1\lib\net461\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Libraries\External.cs" />
+    <Compile Include="Libraries\GameDefinition.cs" />
+    <Compile Include="Libraries\Helper.cs" />
     <Compile Include="Libraries\Options.cs" />
-    <Compile Include="Libraries\EnvPath.cs" />
+    <Compile Include="Libraries\Res.cs" />
     <Compile Include="Libraries\Runner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
     <None Include="App.config" />
     <None Include="CodeMaid.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="ILMerge.props" />
     <None Include="packages.config" />
+    <None Include="Resources\MainIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ILMergeOrder.txt" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\library\ConsoleProgressBar\ConsoleProgressBar.csproj">
+      <Project>{6b8ed7c7-56e8-4f99-9b95-e31ba5e36c8f}</Project>
+      <Name>ConsoleProgressBar</Name>
+    </ProjectReference>
     <ProjectReference Include="..\library\MyConsole\MyConsole.csproj">
       <Project>{47908b59-2dfd-499b-93e2-15024a421fe9}</Project>
       <Name>MyConsole</Name>
     </ProjectReference>
+    <ProjectReference Include="..\library\SortLib\SortLib.csproj">
+      <Project>{97272e7b-fcd0-4ae3-820d-05b720fcd029}</Project>
+      <Name>SortLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ILMergeOrder.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
