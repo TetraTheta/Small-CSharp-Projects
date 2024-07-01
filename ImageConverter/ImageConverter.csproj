@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Libraries\Dirs.cs" />
     <Compile Include="Libraries\External.cs" />
     <Compile Include="Libraries\GameDefinition.cs" />
     <Compile Include="Libraries\Helper.cs" />

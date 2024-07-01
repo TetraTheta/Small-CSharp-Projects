@@ -7,76 +7,121 @@ namespace ImageConverter.Libraries {
   public class Runner {
     // All
     public Runner(AllOptions opt) {
-      FileInfo[] fiBackground = Helper.GetImageFiles(Path.Combine(opt.Target, "IC-Background"));
-      FileInfo[] fiCenter = Helper.GetImageFiles(Path.Combine(opt.Target, "IC-Center"));
-      FileInfo[] fiForeground0 = Helper.GetImageFiles(Path.Combine(opt.Target, "IC-Foreground-0"));
-      FileInfo[] fiForeground1 = Helper.GetImageFiles(Path.Combine(opt.Target, "IC-Foreground-1"));
-      FileInfo[] fiForeground2 = Helper.GetImageFiles(Path.Combine(opt.Target, "IC-Foreground-2"));
-      FileInfo[] fiForeground3 = Helper.GetImageFiles(Path.Combine(opt.Target, "IC-Foreground-3"));
-      FileInfo[] fiForeground4 = Helper.GetImageFiles(Path.Combine(opt.Target, "IC-Foreground-4"));
-      FileInfo[] fiFull = Helper.GetImageFiles(Path.Combine(opt.Target, "IC-Full"));
+      FileInfo[] fiBG = Helper.GetImageFiles(Dirs.BG(opt.Target));
+      FileInfo[] fiC = Helper.GetImageFiles(Dirs.C(opt.Target));
+      FileInfo[] fiFG0 = Helper.GetImageFiles(Dirs.FG0(opt.Target));
+      FileInfo[] fiFG1 = Helper.GetImageFiles(Dirs.FG1(opt.Target));
+      FileInfo[] fiFG2 = Helper.GetImageFiles(Dirs.FG2(opt.Target));
+      FileInfo[] fiFG3 = Helper.GetImageFiles(Dirs.FG3(opt.Target));
+      FileInfo[] fiFG4 = Helper.GetImageFiles(Dirs.FG4(opt.Target));
+      FileInfo[] fiF = Helper.GetImageFiles(Dirs.F(opt.Target));
 
-      fiBackground = fiBackground.Length > 0 ? fiBackground : null;
-      fiCenter = fiCenter.Length > 0 ? fiCenter : null;
-      fiForeground0 = fiForeground0.Length > 0 ? fiForeground0 : null;
-      fiForeground1 = fiForeground1.Length > 0 ? fiForeground1 : null;
-      fiForeground2 = fiForeground2.Length > 0 ? fiForeground2 : null;
-      fiForeground3 = fiForeground3.Length > 0 ? fiForeground3 : null;
-      fiForeground4 = fiForeground4.Length > 0 ? fiForeground4 : null;
-      fiFull = fiFull.Length > 0 ? fiFull : null;
+      fiBG = CheckLength(fiBG);
+      fiC = CheckLength(fiC);
+      fiFG0 = CheckLength(fiFG0);
+      fiFG1 = CheckLength(fiFG1);
+      fiFG2 = CheckLength(fiFG2);
+      fiFG3 = CheckLength(fiFG3);
+      fiFG4 = CheckLength(fiFG4);
+      fiF = CheckLength(fiF);
 
-      FileInfo[] fiAll = new FileInfo[0];
-      foreach (FileInfo[] fi in new FileInfo[][] { fiBackground, fiCenter, fiForeground0, fiForeground1, fiForeground2, fiForeground3, fiForeground4, fiFull }) {
-        if (fi != null && fi.Length > 0) fiAll = Helper.ConcatArrays(fiAll, fi);
-      }
+      FileInfo[] fiAll = CheckLength(new FileInfo[][] { fiBG, fiC, fiFG0, fiFG1, fiFG2, fiFG3, fiFG4, fiF });
 
       ProgressBar pb = Helper.NewProgressBar(fiAll.Length);
 
-      if (fiBackground != null) Progress(new GameDefinition(opt.Game, Operation.Background), fiBackground, "Background", pb);
-      if (fiCenter != null) Progress(new GameDefinition(opt.Game, Operation.Center), fiCenter, "Center", pb);
-      if (fiForeground0 != null) Progress(new GameDefinition(opt.Game, Operation.Foreground0), fiForeground0, "Foreground 0", pb);
-      if (fiForeground1 != null) Progress(new GameDefinition(opt.Game, Operation.Foreground1), fiForeground1, "Foreground 1", pb);
-      if (fiForeground2 != null) Progress(new GameDefinition(opt.Game, Operation.Foreground2), fiForeground2, "Foreground 2", pb);
-      if (fiForeground3 != null) Progress(new GameDefinition(opt.Game, Operation.Foreground3), fiForeground3, "Foreground 3", pb);
-      if (fiForeground4 != null) Progress(new GameDefinition(opt.Game, Operation.Foreground4), fiForeground4, "Foreground 4", pb);
-      if (fiFull != null) Progress(new GameDefinition(opt.Game, Operation.Full), fiFull, "Full", pb);
+      if (fiBG != null) Progress(new GameDefinition(opt.Game, Op.Background), fiBG, "Background", pb);
+      if (fiC != null) Progress(new GameDefinition(opt.Game, Op.Center), fiC, "Center", pb);
+      if (fiFG0 != null) Progress(new GameDefinition(opt.Game, Op.Foreground0), fiFG0, "Foreground 0", pb);
+      if (fiFG1 != null) Progress(new GameDefinition(opt.Game, Op.Foreground1), fiFG1, "Foreground 1", pb);
+      if (fiFG2 != null) Progress(new GameDefinition(opt.Game, Op.Foreground2), fiFG2, "Foreground 2", pb);
+      if (fiFG3 != null) Progress(new GameDefinition(opt.Game, Op.Foreground3), fiFG3, "Foreground 3", pb);
+      if (fiFG4 != null) Progress(new GameDefinition(opt.Game, Op.Foreground4), fiFG4, "Foreground 4", pb);
+      if (fiF != null) Progress(new GameDefinition(opt.Game, Op.Full), fiF, "Full", pb);
+
+      string[] webpArr = new[] { ".webp" };
+      FileInfo[] fiBGC = Helper.GetImageFiles(Dirs.BGC(opt.Target));
+      FileInfo[] fiCC = Helper.GetImageFiles(Dirs.CC(opt.Target));
+      FileInfo[] fiFG0C = Helper.GetImageFiles(Dirs.FG0C(opt.Target));
+      FileInfo[] fiFG1C = Helper.GetImageFiles(Dirs.FG1C(opt.Target));
+      FileInfo[] fiFG2C = Helper.GetImageFiles(Dirs.FG2C(opt.Target));
+      FileInfo[] fiFG3C = Helper.GetImageFiles(Dirs.FG3C(opt.Target));
+      FileInfo[] fiFG4C = Helper.GetImageFiles(Dirs.FG4C(opt.Target));
+      FileInfo[] fiFC = Helper.GetImageFiles(Dirs.FC(opt.Target));
+
+      fiBGC = CheckLength(fiBGC);
+      fiCC = CheckLength(fiCC);
+      fiFG0C = CheckLength(fiFG0C);
+      fiFG1C = CheckLength(fiFG1C);
+      fiFG2C = CheckLength(fiFG2C);
+      fiFG3C = CheckLength(fiFG3C);
+      fiFG4C = CheckLength(fiFG4C);
+      fiFC = CheckLength(fiFC);
+
+      FileInfo[] fiAllC = CheckLength(new FileInfo[][] { fiBGC, fiCC, fiFG0C, fiFG1C, fiFG2C, fiFG3C, fiFG4C, fiFC });
+
+      foreach (FileInfo fi in fiAllC) {
+        if (fi.Extension.Equals(".webp", StringComparison.OrdinalIgnoreCase)) {
+          try {
+            string destPath = Path.Combine(opt.Target, fi.Name);
+            if (File.Exists(destPath)) {
+              Error($"File already exists: {destPath}");
+              continue;
+            }
+            fi.MoveTo(destPath);
+          } catch (IOException e) {
+            Console.WriteLine($"IOException: {e.Message} while moving file: {fi.FullName}");
+          } catch (Exception e) {
+            Console.WriteLine($"Exception: {e.Message} while moving file: {fi.FullName}");
+          }
+        }
+      }
+
+      pb.SetValue(fiAll.Length);
+      Info("All jobs done");
     }
     // Background
     public Runner(BackgroundOptions opt) {
-      FileInfo[] fiBackground = Helper.GetImageFiles(opt.Target);
-      if (fiBackground.Length == 0) {
+      FileInfo[] fiBG = Helper.GetImageFiles(opt.Target);
+      if (fiBG.Length == 0) {
         Error(Res.Error_Target_NoFile);
         return;
-      } else Progress(new GameDefinition(opt.Game, Operation.Background), fiBackground, "Background");
+      } else {
+        Progress(new GameDefinition(opt.Game, Op.Background), fiBG, "Background");
+        Info("All jobs done");
+      }
     }
     // Center
     public Runner(CenterOptions opt) {
-      FileInfo[] fiCenter = Helper.GetImageFiles(opt.Target);
-      if (fiCenter.Length == 0) {
+      FileInfo[] fiC = Helper.GetImageFiles(opt.Target);
+      if (fiC.Length == 0) {
         Error(Res.Error_Target_NoFile);
         return;
-      } else Progress(new GameDefinition(opt.Game, Operation.Center), fiCenter, "Center");
+      } else {
+        Progress(new GameDefinition(opt.Game, Op.Center), fiC, "Center");
+        Info("All jobs done");
+      }
     }
     // CreateDirectory
     public Runner(CreateDirectoryOptions opt) {
-      DirectoryInfo diBackground = new DirectoryInfo(Path.Combine(opt.Target, "IC-Background"));
-      DirectoryInfo diCenter = new DirectoryInfo(Path.Combine(opt.Target, "IC-Center"));
-      DirectoryInfo diForeground0 = new DirectoryInfo(Path.Combine(opt.Target, "IC-Foreground-0"));
-      DirectoryInfo diForeground1 = new DirectoryInfo(Path.Combine(opt.Target, "IC-Foreground-1"));
-      DirectoryInfo diForeground2 = new DirectoryInfo(Path.Combine(opt.Target, "IC-Foreground-2"));
-      DirectoryInfo diForeground3 = new DirectoryInfo(Path.Combine(opt.Target, "IC-Foreground-3"));
-      DirectoryInfo diForeground4 = new DirectoryInfo(Path.Combine(opt.Target, "IC-Foreground-4"));
-      DirectoryInfo diFull = new DirectoryInfo(Path.Combine(opt.Target, "IC-Full"));
+      DirectoryInfo diBG = new DirectoryInfo(Dirs.BG(opt.Target));
+      DirectoryInfo diC = new DirectoryInfo(Dirs.C(opt.Target));
+      DirectoryInfo diFG0 = new DirectoryInfo(Dirs.FG0(opt.Target));
+      DirectoryInfo diFG1 = new DirectoryInfo(Dirs.FG1(opt.Target));
+      DirectoryInfo diFG2 = new DirectoryInfo(Dirs.FG2(opt.Target));
+      DirectoryInfo diFG3 = new DirectoryInfo(Dirs.FG3(opt.Target));
+      DirectoryInfo diFG4 = new DirectoryInfo(Dirs.FG4(opt.Target));
+      DirectoryInfo diF = new DirectoryInfo(Dirs.F(opt.Target));
 
       try {
-        diBackground.Create();
-        diCenter.Create();
-        diForeground0.Create();
-        diForeground1.Create();
-        diForeground2.Create();
-        diForeground3.Create();
-        diForeground4.Create();
-        diFull.Create();
+        diBG.Create();
+        diC.Create();
+        diFG0.Create();
+        diFG1.Create();
+        diFG2.Create();
+        diFG3.Create();
+        diFG3.Create();
+        diF.Create();
+        Info("All jobs done");
       } catch (IOException e) {
         Error(e.Message);
         Console.WriteLine(e.StackTrace);
@@ -84,39 +129,57 @@ namespace ImageConverter.Libraries {
     }
     // Foreground
     public Runner(ForegroundOptions opt) {
-      FileInfo[] fiForeground = Helper.GetImageFiles(opt.Target);
-      if (fiForeground.Length == 0) {
+      FileInfo[] fiFG = Helper.GetImageFiles(opt.Target);
+      if (fiFG.Length == 0) {
         Error(Res.Error_Target_NoFile);
         return;
       } else {
-        if (opt.ChatCount == 0) Progress(new GameDefinition(opt.Game, Operation.Foreground0), fiForeground, "Foreground 0");
-        else if (opt.ChatCount == 1) Progress(new GameDefinition(opt.Game, Operation.Foreground1), fiForeground, "Foreground 1");
-        else if (opt.ChatCount == 2) Progress(new GameDefinition(opt.Game, Operation.Foreground2), fiForeground, "Foreground 2");
-        else if (opt.ChatCount == 3) Progress(new GameDefinition(opt.Game, Operation.Foreground3), fiForeground, "Foreground 3");
-        else if (opt.ChatCount == 4) Progress(new GameDefinition(opt.Game, Operation.Foreground4), fiForeground, "Foreground 4");
+        if (opt.ChatCount == 0) Progress(new GameDefinition(opt.Game, Op.Foreground0), fiFG, "Foreground 0");
+        else if (opt.ChatCount == 1) Progress(new GameDefinition(opt.Game, Op.Foreground1), fiFG, "Foreground 1");
+        else if (opt.ChatCount == 2) Progress(new GameDefinition(opt.Game, Op.Foreground2), fiFG, "Foreground 2");
+        else if (opt.ChatCount == 3) Progress(new GameDefinition(opt.Game, Op.Foreground3), fiFG, "Foreground 3");
+        else if (opt.ChatCount == 4) Progress(new GameDefinition(opt.Game, Op.Foreground4), fiFG, "Foreground 4");
+        Info("All jobs done");
       }
     }
     // Full
     public Runner(FullOptions opt) {
-      FileInfo[] fiFull = Helper.GetImageFiles(opt.Target);
-      if (fiFull.Length == 0) {
+      FileInfo[] fiF = Helper.GetImageFiles(opt.Target);
+      if (fiF.Length == 0) {
         Error(Res.Error_Target_NoFile);
         return;
-      } else Progress(new GameDefinition(opt.Game, Operation.Full), fiFull, "Full");
+      } else {
+        Progress(new GameDefinition(opt.Game, Op.Full), fiF, "Full");
+        Info("All jobs done");
+      }
     }
     // Runner
     public void Progress(GameDefinition gd, FileInfo[] targets, string header, ProgressBar pb = null) {
       bool showParent = false;
-      if (pb == null) showParent = true;
+      if (pb != null) showParent = true;
       pb = pb ?? Helper.NewProgressBar(targets.Length);
       foreach (FileInfo fi in targets) {
         string name = showParent ? fi.Directory.Name + "/" + fi.Name : fi.Name;
-        pb.WriteLine($"[{header}] {name}");
-        pb.SetProcessingText($"[{header}] {name}");
+        Console.Title = $"ImageConverter [{fi.Directory.Name}] [{pb.Value}/{pb.Maximum}] [{header}] {name}";
+        pb.WriteLine($"[{fi.Directory.Name}] [{pb.Value}/{pb.Maximum}] [{header}] {name}");
+        pb.SetProcessingText($"[{pb.Value}/{pb.Maximum}] [{header}] {name}");
         External.ProcessImage(fi, gd);
         pb.PerformStep();
       }
+      if (!showParent) pb.SetValue(targets.Length);
       Directory.Delete(Path.Combine(targets[0].Directory.FullName, "_pre_webp"), true);
+      Console.Title = Program.OriginalTitle;
+    }
+    // Helper
+    private FileInfo[] CheckLength(FileInfo[] fi) {
+      return fi.Length > 0 ? fi : null;
+    }
+    private FileInfo[] CheckLength(FileInfo[][] fis) {
+      FileInfo[] fia = new FileInfo[0];
+      foreach (FileInfo[] fi in fis) {
+        if (fi != null && fi.Length > 0) fia = Helper.ConcatArrays(fia, fi);
+      }
+      return fia.Length > 0 ? fia : null;
     }
   }
 }

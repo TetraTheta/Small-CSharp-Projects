@@ -28,12 +28,20 @@ namespace ImageConverter.Libraries {
       return result;
     }
     public static FileInfo[] GetImageFiles(string target) {
-      string[] exts = new[] { ".jpg", ".png", ".webp" };
-      return new DirectoryInfo(target).GetFilesByExtensions(exts).OrderBy(i => i.Name, new NaturalComparer()).ToArray();
+      return GetImageFiles(target, new[] { ".jpg", ".png", ".webp" });
+    }
+    public static FileInfo[] GetImageFiles(string target, string[] extensions) {
+      DirectoryInfo targetInfo = new DirectoryInfo(target);
+      if (!targetInfo.Exists) return new FileInfo[0];
+
+      return targetInfo.GetFilesByExtensions(extensions).OrderBy(i => i.Name, new NaturalComparer()).ToArray();
     }
     public static FileInfo[] GetSubdirImageFiles(string target, string subdir) {
+      return GetSubdirImageFiles(target, subdir, new[] { ".jpg", ".png", ".webp" });
+    }
+    public static FileInfo[] GetSubdirImageFiles(string target, string subdir, string[] extensions) {
       string newPath = Path.Combine(target, subdir);
-      return GetImageFiles(newPath);
+      return GetImageFiles(newPath, extensions);
     }
     public static ProgressBar NewProgressBar(int max) {
       ProgressBar pB = new ProgressBar { Maximum = max, FixedInBottom = true };

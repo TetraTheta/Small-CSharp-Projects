@@ -7,8 +7,12 @@ using System.IO;
 using static MyConsole.MyConsole;
 
 namespace ImageConverter {
-  internal static class Program {
+  public static class Program {
+    public static string OriginalTitle = null;
+
     private static void Main(string[] args) {
+      OriginalTitle = Console.Title;
+
       Type[] _types = {
         typeof(AllOptions),
         typeof(BackgroundOptions),
