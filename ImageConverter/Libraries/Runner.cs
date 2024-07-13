@@ -1,6 +1,8 @@
 using ConsoleProgressBar;
 using System;
+using System.Globalization;
 using System.IO;
+using System.Media;
 using static MyConsole.MyConsole;
 
 namespace ImageConverter.Libraries {
@@ -29,16 +31,15 @@ namespace ImageConverter.Libraries {
 
       ProgressBar pb = Helper.NewProgressBar(fiAll.Length);
 
-      if (fiBG != null) Progress(new GameDefinition(opt.Game, Op.Background), fiBG, "Background", pb);
-      if (fiC != null) Progress(new GameDefinition(opt.Game, Op.Center), fiC, "Center", pb);
-      if (fiFG0 != null) Progress(new GameDefinition(opt.Game, Op.Foreground0), fiFG0, "Foreground 0", pb);
-      if (fiFG1 != null) Progress(new GameDefinition(opt.Game, Op.Foreground1), fiFG1, "Foreground 1", pb);
-      if (fiFG2 != null) Progress(new GameDefinition(opt.Game, Op.Foreground2), fiFG2, "Foreground 2", pb);
-      if (fiFG3 != null) Progress(new GameDefinition(opt.Game, Op.Foreground3), fiFG3, "Foreground 3", pb);
-      if (fiFG4 != null) Progress(new GameDefinition(opt.Game, Op.Foreground4), fiFG4, "Foreground 4", pb);
-      if (fiF != null) Progress(new GameDefinition(opt.Game, Op.Full), fiF, "Full", pb);
+      if (fiBG != null) Progress(new GameDefinition(opt.Game, Op.Background), fiBG, "BG", pb);
+      if (fiC != null) Progress(new GameDefinition(opt.Game, Op.Center), fiC, "C", pb);
+      if (fiFG0 != null) Progress(new GameDefinition(opt.Game, Op.Foreground0), fiFG0, "FG 0", pb);
+      if (fiFG1 != null) Progress(new GameDefinition(opt.Game, Op.Foreground1), fiFG1, "FG 1", pb);
+      if (fiFG2 != null) Progress(new GameDefinition(opt.Game, Op.Foreground2), fiFG2, "FG 2", pb);
+      if (fiFG3 != null) Progress(new GameDefinition(opt.Game, Op.Foreground3), fiFG3, "FG 3", pb);
+      if (fiFG4 != null) Progress(new GameDefinition(opt.Game, Op.Foreground4), fiFG4, "FG 4", pb);
+      if (fiF != null) Progress(new GameDefinition(opt.Game, Op.Full), fiF, "F", pb);
 
-      string[] webpArr = new[] { ".webp" };
       FileInfo[] fiBGC = Helper.GetImageFiles(Dirs.BGC(opt.Target));
       FileInfo[] fiCC = Helper.GetImageFiles(Dirs.CC(opt.Target));
       FileInfo[] fiFG0C = Helper.GetImageFiles(Dirs.FG0C(opt.Target));
@@ -77,7 +78,8 @@ namespace ImageConverter.Libraries {
       }
 
       pb.SetValue(fiAll.Length);
-      Info("All jobs done");
+      SystemSounds.Asterisk.Play();
+      Info("All jobs complete");
     }
     // Background
     public Runner(BackgroundOptions opt) {
@@ -86,8 +88,9 @@ namespace ImageConverter.Libraries {
         Error(Res.Error_Target_NoFile);
         return;
       } else {
-        Progress(new GameDefinition(opt.Game, Op.Background), fiBG, "Background");
-        Info("All jobs done");
+        Progress(new GameDefinition(opt.Game, Op.Background), fiBG, "BG");
+        SystemSounds.Asterisk.Play();
+        Info("Background job complete");
       }
     }
     // Center
@@ -97,8 +100,9 @@ namespace ImageConverter.Libraries {
         Error(Res.Error_Target_NoFile);
         return;
       } else {
-        Progress(new GameDefinition(opt.Game, Op.Center), fiC, "Center");
-        Info("All jobs done");
+        Progress(new GameDefinition(opt.Game, Op.Center), fiC, "C");
+        SystemSounds.Asterisk.Play();
+        Info("Center job complete");
       }
     }
     // CreateDirectory
@@ -120,8 +124,10 @@ namespace ImageConverter.Libraries {
         diFG2.Create();
         diFG3.Create();
         diFG3.Create();
+        diFG4.Create();
         diF.Create();
-        Info("All jobs done");
+        SystemSounds.Asterisk.Play();
+        Info("CreateDirectory job complete");
       } catch (IOException e) {
         Error(e.Message);
         Console.WriteLine(e.StackTrace);
@@ -134,12 +140,12 @@ namespace ImageConverter.Libraries {
         Error(Res.Error_Target_NoFile);
         return;
       } else {
-        if (opt.ChatCount == 0) Progress(new GameDefinition(opt.Game, Op.Foreground0), fiFG, "Foreground 0");
-        else if (opt.ChatCount == 1) Progress(new GameDefinition(opt.Game, Op.Foreground1), fiFG, "Foreground 1");
-        else if (opt.ChatCount == 2) Progress(new GameDefinition(opt.Game, Op.Foreground2), fiFG, "Foreground 2");
-        else if (opt.ChatCount == 3) Progress(new GameDefinition(opt.Game, Op.Foreground3), fiFG, "Foreground 3");
-        else if (opt.ChatCount == 4) Progress(new GameDefinition(opt.Game, Op.Foreground4), fiFG, "Foreground 4");
-        Info("All jobs done");
+        if (opt.ChatCount == 0) Progress(new GameDefinition(opt.Game, Op.Foreground0), fiFG, "FG 0");
+        else if (opt.ChatCount == 1) Progress(new GameDefinition(opt.Game, Op.Foreground1), fiFG, "FG 1");
+        else if (opt.ChatCount == 2) Progress(new GameDefinition(opt.Game, Op.Foreground2), fiFG, "FG 2");
+        else if (opt.ChatCount == 3) Progress(new GameDefinition(opt.Game, Op.Foreground3), fiFG, "FG 3");
+        else if (opt.ChatCount == 4) Progress(new GameDefinition(opt.Game, Op.Foreground4), fiFG, "FG 4");
+        Info("Foreground job complete");
       }
     }
     // Full
@@ -149,8 +155,9 @@ namespace ImageConverter.Libraries {
         Error(Res.Error_Target_NoFile);
         return;
       } else {
-        Progress(new GameDefinition(opt.Game, Op.Full), fiF, "Full");
-        Info("All jobs done");
+        Progress(new GameDefinition(opt.Game, Op.Full), fiF, "F");
+        SystemSounds.Asterisk.Play();
+        Info("Full job complete");
       }
     }
     // Runner
@@ -159,10 +166,14 @@ namespace ImageConverter.Libraries {
       if (pb != null) showParent = true;
       pb = pb ?? Helper.NewProgressBar(targets.Length);
       foreach (FileInfo fi in targets) {
-        string name = showParent ? fi.Directory.Name + "/" + fi.Name : fi.Name;
-        Console.Title = $"ImageConverter [{fi.Directory.Name}] [{pb.Value}/{pb.Maximum}] [{header}] {name}";
-        pb.WriteLine($"[{fi.Directory.Name}] [{pb.Value}/{pb.Maximum}] [{header}] {name}");
-        pb.SetProcessingText($"[{pb.Value}/{pb.Maximum}] [{header}] {name}");
+        string name = showParent ? (fi.Directory.Name + "/" + fi.Name).Trim() : fi.Name.Trim();
+        string title = showParent ? $"ImageConverter [{Shrink(fi.Directory.Parent.Name)}] [{pb.Value + 1}/{pb.Maximum}] {name}" : $"ImageConverter [{Shrink(fi.Directory.Name)}] [{pb.Value + 1}/{pb.Maximum}] {name}";
+        string progress = $"[{pb.Value + 1}/{pb.Maximum}] [{header}] {name}";
+        string log = showParent ? $"[{pb.Value + 1}/{pb.Maximum}] [{Shrink(fi.Directory.Parent.Name)}] [{header}] {name}" : $"[{pb.Value + 1}/{pb.Maximum}] [{Shrink(fi.Directory.Name)}] [{header}] {name}";
+
+        Console.Title = title;
+        pb.WriteLine(log);
+        pb.SetProcessingText(progress);
         External.ProcessImage(fi, gd);
         pb.PerformStep();
       }
@@ -180,6 +191,18 @@ namespace ImageConverter.Libraries {
         if (fi != null && fi.Length > 0) fia = Helper.ConcatArrays(fia, fi);
       }
       return fia.Length > 0 ? fia : null;
+    }
+    private string Shrink(string text) {
+      StringInfo info = new StringInfo(text);
+      int length = info.LengthInTextElements;
+
+      if (length > 15) {
+        string first = info.SubstringByTextElements(0, 10);
+        string last = info.SubstringByTextElements(length - 4, 4);
+        return first + "…" + last;
+      } else {
+        return text;
+      }
     }
   }
 }

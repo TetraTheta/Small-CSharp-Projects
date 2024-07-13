@@ -76,7 +76,7 @@ namespace ImageConverter.Libraries {
 
             case Op.Foreground0:
               CROP_POS = CropPosition.Bottom;
-              CROP_HEIGHT = 305;
+              CROP_HEIGHT = 310;
               break;
 
             case Op.Foreground1:
@@ -86,17 +86,17 @@ namespace ImageConverter.Libraries {
 
             case Op.Foreground2:
               CROP_POS = CropPosition.Bottom;
-              CROP_HEIGHT = 495;
+              CROP_HEIGHT = 505;
               break;
 
             case Op.Foreground3:
               CROP_POS = CropPosition.Bottom;
-              CROP_HEIGHT = 570;
+              CROP_HEIGHT = 580;
               break;
 
             case Op.Foreground4:
               CROP_POS = CropPosition.Bottom;
-              CROP_HEIGHT = 645;
+              CROP_HEIGHT = 665;
               break;
 
             case Op.Full:
