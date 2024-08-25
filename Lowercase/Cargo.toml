@@ -1,0 +1,13 @@
+[package]
+name = "Lowercase"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "lowercase"
+path = "src/main.rs"
+
+[dependencies]
+console = { workspace = true }
+path = { workspace = true }
+log = "0.4.22"

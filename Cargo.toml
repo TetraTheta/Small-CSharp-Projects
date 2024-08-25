@@ -1,0 +1,14 @@
+[workspace]
+resolver = "2"
+members = [ "Lowercase" ]
+
+[workspace.dependencies]
+console = { path = "Library/console" }
+path = { path = "Library/path" }
+
+[profile.release]
+codegen-units = 1 # Reduce number of codegen units to increase optimizations.
+lto = true # Enable Link Time Optimization
+opt-level = "z" # Optimize for size.
+panic = "abort" # Abort on panic
+strip = true # Automatically strip symbols from the binary.
