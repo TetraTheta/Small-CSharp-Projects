@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [ "Lowercase" ]
+members = [ "B64", "Lowercase" ]
 
 [workspace.dependencies]
 console = { path = "Library/console" }

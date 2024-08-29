@@ -1,7 +1,8 @@
 [package]
-name = "Lowercase"
-version = "0.1.0"
+build = "build.rs"
 edition = "2021"
+name = "Lowercase"
+version = "1.0.1"
 
 [[bin]]
 name = "lowercase"
@@ -10,4 +11,12 @@ path = "src/main.rs"
 [dependencies]
 console = { workspace = true }
 path = { workspace = true }
-log = "0.4.22"
+
+[target.'cfg(windows)'.build-dependencies]
+tauri-winres = "0.1.1"
+
+[package.metadata.tauri-winres]
+FileDescription = "Convert uppercase characters in file/directory name to lowercase"
+LegalCopyright = "Copyright (c) TetraTheta"
+OriginalFilename = "lowercase.exe"
+ProductName = "Lowercase"

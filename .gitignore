@@ -839,3 +839,5 @@ rust-project.json
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/go,c++,git,csharp,eclipse,codeblocks,intellij+all,visualstudio,visualstudiocode,rust,rust-analyzer
+
+.build

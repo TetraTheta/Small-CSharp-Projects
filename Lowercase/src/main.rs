@@ -25,7 +25,7 @@ fn main() {
     print_pinfo!("DONE");
   } else {
     print!("Lowercase all files and sub-directories? (yes|no)> ");
-    stdout().flush().expect("Something went wrong");
+    stdout().flush().unwrap();
     let mut user_input = String::new();
     stdin().read_line(&mut user_input).unwrap();
     if is_true(&user_input.trim().to_string()) {

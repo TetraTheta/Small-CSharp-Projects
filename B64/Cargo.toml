@@ -1,0 +1,19 @@
+[package]
+build = "build.rs"
+edition = "2021"
+name = "b64"
+version = "1.0.0"
+
+[dependencies]
+console = { workspace = true }
+arboard = "3.4.0"
+base64 = "0.22.1"
+
+[target.'cfg(windows)'.build-dependencies]
+tauri-winres = "0.1.1"
+
+[package.metadata.tauri-winres]
+FileDescription = "Decode Base64 string and copy it to clipboard"
+LegalCopyright = "Copyright (c) TetraTheta"
+OriginalFilename = "b64.exe"
+ProductName = "B64"
