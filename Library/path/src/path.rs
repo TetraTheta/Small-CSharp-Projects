@@ -1,10 +1,10 @@
-use console::error_red;
+use console::print_error;
 use std::path::{Path, PathBuf};
 use std::{env, process};
 
 /// Get absolute path from either given `Option<String>` or current working directory.
 ///
-/// If given path is valid directory, absolute path of the directory will be returned.
+/// If given path is valid directory, absolute path of the directory will be returned.<br>
 /// If given path is empty `String`, current working directory will be returned.
 /// # Usage
 /// ```rust
@@ -22,27 +22,27 @@ pub fn resolve_path_dir(target: Option<String>) -> PathBuf {
       if path.exists() {
         if path.is_dir() {
           let abs_path = path.canonicalize().unwrap_or_else(|_| {
-            error_red!("Failed to canonicalize the path: {:?}", path.display());
+            print_error!("Failed to canonicalize the path: {}", to_windows_path_string(&path.to_path_buf()));
             process::exit(1);
           });
           abs_path
         } else {
-          error_red!("Path is not a directory: {:?}", path.display());
+          print_error!("Path is not a directory: {}", to_windows_path_string(&path.to_path_buf()));
           process::exit(1);
         }
       } else {
-        error_red!("Path does not exist: {:?}", path.display());
+        print_error!("Path does not exist: {}", to_windows_path_string(&path.to_path_buf()));
         process::exit(1);
       }
     }
     None => env::current_dir().unwrap_or_else(|_| {
-      error_red!("Failed to get the current working directory");
+      print_error!("Failed to get the current working directory");
       process::exit(1);
     }),
   }
 }
 
-/// Convert `PathBuf` to `String` which represents Windows Path.
+/// Convert `PathBuf` to `String` which represents Windows Path.<br>
 /// This is basically removing `\\?\` from lossy string of `PathBuf`.
 /// # Usage
 /// ```rust
