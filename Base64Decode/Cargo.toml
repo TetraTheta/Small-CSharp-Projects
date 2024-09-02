@@ -1,8 +1,12 @@
 [package]
 build = "build.rs"
 edition = "2021"
-name = "b64"
-version = "1.0.0"
+name = "Base64Decode"
+version = "1.0.1"
+
+[[bin]]
+name = "b64d"
+path = "src/main.rs"
 
 [dependencies]
 console = { workspace = true }
@@ -15,5 +19,5 @@ tauri-winres = "0.1.1"
 [package.metadata.tauri-winres]
 FileDescription = "Decode Base64 string and copy it to clipboard"
 LegalCopyright = "Copyright (c) TetraTheta"
-OriginalFilename = "b64.exe"
-ProductName = "B64"
+OriginalFilename = "b64d.exe"
+ProductName = "Base64Decode"
