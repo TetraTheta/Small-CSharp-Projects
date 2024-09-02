@@ -14,13 +14,13 @@ macro_rules! print_renamed {
 fn main() {
   // Gather arguments
   let args: Vec<String> = env::args().skip(1).collect();
-  let (is_yes, _, new_args) = check_common(args);
+  let (res, new_args) = check_common(args);
   let target_string = new_args.into_iter().nth(0); // new_args is destroyed
 
   let target = resolve_path_dir(target_string);
   print_info!("Target: {}", to_windows_path_string(&target));
 
-  if is_yes {
+  if res.is_yes {
     lowercase(target);
     print_pinfo!("DONE");
   } else {
