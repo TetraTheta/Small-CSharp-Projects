@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [ "B64", "Lowercase" ]
+members = ["Base64Decode", "Lowercase" , "RemoveEmptyDirectories"]
 
 [workspace.dependencies]
 console = { path = "Library/console" }

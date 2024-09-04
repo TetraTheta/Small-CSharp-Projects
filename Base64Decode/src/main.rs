@@ -1,29 +1,32 @@
 use arboard::Clipboard;
+use argh::FromArgs;
 use base64::prelude::*;
 use console::{print_error, print_info, print_pinfo, print_pwarn};
-use std::env;
+use std::process::ExitCode;
 
-fn main() {
-  let args: Vec<String> = env::args().skip(1).collect();
-  let arg = args.into_iter().nth(0);
+#[derive(FromArgs)]
+#[argh(description = "decode BASE64-encoded string and copy the decoded string to clipboard.")]
+struct Cli {
+  #[argh(positional, arg_name = "ENCODED", description = "BASE64-encoded string")]
+  encoded: String,
+}
 
-  if arg.is_none() {
-    print_pwarn!("No argument provided.");
-    return;
+fn main() -> ExitCode {
+  let cli: Cli = argh::from_env();
+  let encoded = cli.encoded;
+
+  if encoded.is_empty() {
+    print_pwarn!("The given argument is an empty string. Please provide a valid string.");
+    return ExitCode::from(1);
   }
-  let s = arg.unwrap();
-  if s.is_empty() {
-    print_pwarn!("Argument is an empty string. Please provide valid string.");
-    return;
-  }
 
-  print_info!("Original string: {}", s);
+  print_info!("Original string: {}", encoded);
 
-  let decoded = match BASE64_STANDARD.decode(s) {
+  let decoded = match BASE64_STANDARD.decode(encoded) {
     Ok(decoded) => decoded,
     Err(e) => {
-      print_error!("Failed to decode string as Base64: {}", e);
-      return;
+      print_error!("Failed to decode string as BASE64: {}", e);
+      return ExitCode::from(2);
     }
   };
 
@@ -31,23 +34,25 @@ fn main() {
     Ok(conv) => conv,
     Err(e) => {
       print_error!("Invalid UTF-8 string: {}", e);
-      return;
+      return ExitCode::from(3);
     }
   };
 
   print_info!("Decoded string: {}", conv);
 
   if copy_to_clipboard(&conv).is_ok() {
-    print_pinfo!("Decoded string has been copied to clipboard.");
+    print_pinfo!("Decoded string has been copied to the clipboard.");
   }
+
+  ExitCode::SUCCESS
 }
 
 fn copy_to_clipboard(text: &str) -> Result<(), ()> {
   let mut cb = Clipboard::new().map_err(|e| {
-    print_error!("Failed to create clipboard: {}", e);
+    print_error!("Failed to create a new clipboard instance: {}", e);
   })?;
   cb.set_text(text.to_string()).map_err(|e| {
-    print_error!("Failed to set clipboard content: {}", e);
+    print_error!("Failed to set a clipboard content: {}", e);
   })?;
   Ok(())
 }
