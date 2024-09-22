@@ -50,6 +50,9 @@
     <Compile Include="FlatComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="FlatProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FlatTabControl.cs">
       <SubType>Component</SubType>
     </Compile>

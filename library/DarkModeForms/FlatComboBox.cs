@@ -38,14 +38,10 @@ namespace DarkModeForms {
       if (m.Msg == WM_PAINT && DropDownStyle != ComboBoxStyle.Simple) {
         var clientRect = ClientRectangle;
         var dropDownButtonWidth = SystemInformation.HorizontalScrollBarArrowWidth;
-        var outerBorder = new Rectangle(clientRect.Location,
-          new Size(clientRect.Width - 1, clientRect.Height - 1));
-        var innerBorder = new Rectangle(outerBorder.X + 1, outerBorder.Y + 1,
-          outerBorder.Width - dropDownButtonWidth - 2, outerBorder.Height - 2);
-        var innerInnerBorder = new Rectangle(innerBorder.X + 1, innerBorder.Y + 1,
-          innerBorder.Width - 2, innerBorder.Height - 2);
-        var dropDownRect = new Rectangle(innerBorder.Right + 1, innerBorder.Y - 1,
-          dropDownButtonWidth, innerBorder.Height + 2);
+        var outerBorder = new Rectangle(clientRect.Location, new Size(clientRect.Width - 1, clientRect.Height - 1));
+        var innerBorder = new Rectangle(outerBorder.X + 1, outerBorder.Y + 1, outerBorder.Width - dropDownButtonWidth - 2, outerBorder.Height - 2);
+        var innerInnerBorder = new Rectangle(innerBorder.X + 1, innerBorder.Y + 1, innerBorder.Width - 2, innerBorder.Height - 2);
+        var dropDownRect = new Rectangle(innerBorder.Right + 1, innerBorder.Y - 1, dropDownButtonWidth, innerBorder.Height + 2);
         if (RightToLeft == RightToLeft.Yes) {
           innerBorder.X = clientRect.Width - innerBorder.Right;
           innerInnerBorder.X = clientRect.Width - innerInnerBorder.Right;
@@ -55,13 +51,11 @@ namespace DarkModeForms {
         var innerBorderColor = Enabled ? BackColor : SystemColors.Control;
         var outerBorderColor = Enabled ? BorderColor : SystemColors.ControlDark;
         var buttonColor = Enabled ? ButtonColor : SystemColors.Control;
-        var middle = new Point(dropDownRect.Left + dropDownRect.Width / 2,
-          dropDownRect.Top + dropDownRect.Height / 2);
-        var arrow = new Point[]
-        {
-      new Point(middle.X - 3, middle.Y - 2),
-      new Point(middle.X + 4, middle.Y - 2),
-      new Point(middle.X, middle.Y + 2)
+        var middle = new Point(dropDownRect.Left + dropDownRect.Width / 2, dropDownRect.Top + dropDownRect.Height / 2);
+        var arrow = new Point[] {
+          new Point(middle.X - 3, middle.Y - 2),
+          new Point(middle.X + 4, middle.Y - 2),
+          new Point(middle.X, middle.Y + 2)
         };
         var ps = new PAINTSTRUCT();
         bool shoulEndPaint = false;
@@ -73,13 +67,11 @@ namespace DarkModeForms {
         } else {
           dc = m.WParam;
         }
-        var rgn = CreateRectRgn(innerInnerBorder.Left, innerInnerBorder.Top,
-          innerInnerBorder.Right, innerInnerBorder.Bottom);
+        var rgn = CreateRectRgn(innerInnerBorder.Left, innerInnerBorder.Top, innerInnerBorder.Right, innerInnerBorder.Bottom);
         SelectClipRgn(dc, rgn);
         DefWndProc(ref m);
         DeleteObject(rgn);
-        rgn = CreateRectRgn(clientRect.Left, clientRect.Top,
-          clientRect.Right, clientRect.Bottom);
+        rgn = CreateRectRgn(clientRect.Left, clientRect.Top, clientRect.Right, clientRect.Bottom);
         SelectClipRgn(dc, rgn);
 
         using (var g = Graphics.FromHdc(dc)) {
@@ -104,14 +96,13 @@ namespace DarkModeForms {
           //}
 
           Size cSize = new Size(8, 4); //<- Size of the Chevron: 8x4 px
-          var chevron = new Point[]
-          {
+          var chevron = new Point[] {
             new Point(middle.X - (cSize.Width / 2), middle.Y - (cSize.Height / 2)),
             new Point(middle.X + (cSize.Width / 2), middle.Y - (cSize.Height / 2)),
             new Point(middle.X, middle.Y + (cSize.Height / 2))
           };
-          using (var chevronPen = new Pen(BorderColor, 2.5f)) //<- Color and Border Width
-          {
+          using (var chevronPen = new Pen(BorderColor, 2.5f)) {
+            // Color and Border Width
             g.DrawLine(chevronPen, chevron[0], chevron[2]);
             g.DrawLine(chevronPen, chevron[1], chevron[2]);
           }
@@ -130,11 +121,13 @@ namespace DarkModeForms {
 
           #endregion Borders
         }
-        if (shoulEndPaint)
+        if (shoulEndPaint) {
           EndPaint(Handle, ref ps);
+        }
         DeleteObject(rgn);
-      } else
+      } else {
         base.WndProc(ref m);
+      }
     }
 
     private const int WM_PAINT = 0xF;
@@ -165,8 +158,7 @@ namespace DarkModeForms {
     }
 
     [DllImport("user32.dll")]
-    private static extern IntPtr BeginPaint(IntPtr hWnd,
-      [In, Out] ref PAINTSTRUCT lpPaint);
+    private static extern IntPtr BeginPaint(IntPtr hWnd, [In, Out] ref PAINTSTRUCT lpPaint);
 
     [DllImport("user32.dll")]
     private static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT lpPaint);
