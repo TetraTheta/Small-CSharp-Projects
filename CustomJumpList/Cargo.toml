@@ -1,0 +1,25 @@
+[package]
+build = "build.rs"
+name = "CustomJumpList"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "cjl"
+path = "src/main.rs"
+
+[dependencies.windows]
+version = "0.58.0"
+features = ["UI_StartScreen", "Win32_UI_Shell", "Win32_UI_Shell_Common", "Win32_UI_Shell_PropertiesSystem", "Win32_Storage_EnhancedStorage", "Win32_System_Com"]
+
+[dependencies.windows-core]
+version = "0.58.0"
+
+[target.'cfg(windows)'.build-dependencies]
+tauri-winres = "0.1.1"
+
+[package.metadata.tauri-winres]
+FileDescription = "Custom Jump List"
+LegalCopyright = "Copyright (c) TetraTheta"
+OriginalFilename = "cjl.exe"
+ProductName = "CustomJumpList"

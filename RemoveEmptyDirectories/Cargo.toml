@@ -1,0 +1,25 @@
+[package]
+build = "build.rs"
+edition = "2021"
+name = "RemoveEmptyDirectories"
+version = "1.0.0"
+
+[[bin]]
+name = "red"
+path = "src/main.rs"
+
+[dependencies]
+console = { workspace = true }
+path = { workspace = true }
+argh = "0.1.12"
+rust-ini = "0.21.1"
+glob = "0.3.1"
+
+[target.'cfg(windows)'.build-dependencies]
+tauri-winres = "0.1.1"
+
+[package.metadata.tauri-winres]
+FileDescription = "Remove empty directories"
+LegalCopyright = "Copyright (c) TetraTheta"
+OriginalFilename = "red.exe"
+ProductName = "RemoveEmptyDirectories"

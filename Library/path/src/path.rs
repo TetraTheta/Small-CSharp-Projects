@@ -54,7 +54,6 @@ pub fn resolve_path_dir(target: Option<String>) -> PathBuf {
 /// assert_eq!(r"C:\", to_windows_path_string(&path_buf));
 /// ```
 pub fn to_windows_path_string(path_buf: &PathBuf) -> String {
-  let cloned = path_buf.clone();
-  let lossy = cloned.to_string_lossy();
+  let lossy = path_buf.to_string_lossy();
   lossy.strip_prefix(r"\\?\").unwrap_or(&lossy).to_string()
 }

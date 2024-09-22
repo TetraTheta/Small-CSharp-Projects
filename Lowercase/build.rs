@@ -1,8 +1,6 @@
-#[cfg(windows)]
 fn main() {
-  let res = tauri_winres::WindowsResource::new();
-  res.compile().unwrap();
+  if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
+    let res = tauri_winres::WindowsResource::new();
+    res.compile().unwrap();
+  }
 }
-
-#[cfg(not(windows))]
-fn main() {}
