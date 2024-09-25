@@ -1,3 +1,5 @@
+using DarkModeForms;
+
 namespace ConvertWebP {
   partial class ProgressForm {
     /// <summary>
@@ -24,7 +26,7 @@ namespace ConvertWebP {
     /// </summary>
     private void InitializeComponent() {
       this.labelPath = new System.Windows.Forms.Label();
-      this.progressBar = new System.Windows.Forms.ProgressBar();
+      this.progressBar = new FlatProgressBar();
       this.listBoxHistory = new System.Windows.Forms.ListBox();
       this.labelCurrent = new System.Windows.Forms.Label();
       this.SuspendLayout();
@@ -86,9 +88,8 @@ namespace ConvertWebP {
     #endregion
 
     private System.Windows.Forms.Label labelPath;
-    private System.Windows.Forms.ProgressBar progressBar;
+    private FlatProgressBar progressBar;
     private System.Windows.Forms.ListBox listBoxHistory;
     private System.Windows.Forms.Label labelCurrent;
   }
 }
-
