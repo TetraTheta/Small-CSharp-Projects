@@ -326,7 +326,7 @@ namespace DarkModeForms {
       };
 
       string Mode = IsDarkMode ? "DarkMode_Explorer" : "ClearMode_Explorer";
-      SetWindowTheme(control.Handle, Mode, null);
+      SetWindowTheme(control.Handle, Mode, null); //<- Attempts to apply Dark Mode using Win32 API if available.
 
       control.GetType().GetProperty("BackColor")?.SetValue(control, OScolors.Control);
       control.GetType().GetProperty("ForeColor")?.SetValue(control, OScolors.TextActive);
@@ -367,6 +367,10 @@ namespace DarkModeForms {
       }
       if (control is ComboBox) {
         Mode = IsDarkMode ? "DarkMode_CFD" : "ClearMode_CFD";
+        control.BeginInvoke(new Action(() => (control as ComboBox).SelectionLength = 0));
+        if (control.Enabled == false && this.IsDarkMode) {
+          (control as ComboBox).DropDownStyle = ComboBoxStyle.DropDownList;
+        }
         SetWindowTheme(control.Handle, Mode, null);
       }
       if (control is Panel) {
