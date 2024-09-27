@@ -1,19 +1,29 @@
+using CLIParser;
+using CLIParser.Attributes;
 using System;
 using System.Windows.Shell;
-using System.Windows;
-using System.Diagnostics;
 
 namespace CustomJumpList {
 
+  public class CLI {
+
+    [Switch('r', "register", HelpText = "")]
+    public bool Register { get; set; }
+  }
+
   internal static class Program {
     [STAThread]
-    private static void Main() {
-      ProcessStartInfo processStartInfo = new ProcessStartInfo() {
-        FileName = Environment.ExpandEnvironmentVariables(@"%WinDir%\explorer.exe")
-      };
-      Process.Start(processStartInfo);
+    private static void Main(string[] args) {
+      CLI cli = Parser.Parse<CLI>(args);
 
-      Application app = new Application();
+      if (!cli.Register) {
+        System.Diagnostics.ProcessStartInfo processStartInfo = new System.Diagnostics.ProcessStartInfo() {
+          FileName = Environment.ExpandEnvironmentVariables(@"%WinDir%\explorer.exe")
+        };
+        System.Diagnostics.Process.Start(processStartInfo);
+      }
+
+      System.Windows.Application app = new System.Windows.Application();
 
       JumpList jl = new JumpList();
 
@@ -60,7 +70,7 @@ namespace CustomJumpList {
       jl.JumpItems.Add(taskWebNewWindow);
       jl.JumpItems.Add(taskWebNewIncognitoWindow);
 
-      JumpList.SetJumpList(Application.Current, jl);
+      JumpList.SetJumpList(System.Windows.Application.Current, jl);
       jl.Apply();
 
       app.Shutdown();
