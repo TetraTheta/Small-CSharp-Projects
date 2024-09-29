@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using static MyConsole.MyConsole;
+using MyConsole;
 
 namespace ImageConverter.Libraries {
   public static class External {
@@ -72,7 +72,7 @@ namespace ImageConverter.Libraries {
       proc.WaitForExit();
 
       if (proc.ExitCode != 0) {
-        Error(error);
+        MCS.Error(error);
       }
 
       return result.Trim();

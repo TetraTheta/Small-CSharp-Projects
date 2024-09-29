@@ -1,3 +1,4 @@
+using MyConsole;
 using System;
 using System.Security.Principal;
 
@@ -14,39 +15,39 @@ namespace Pathed.Libraries {
     public static int Append(AppendOptions opt) {
       if (opt.Target == EnvironmentVariableTarget.Machine && !IsAdmin()) Elevate();
       if (opt.Target == EnvironmentVariableTarget.Process) {
-        MyConsole.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
+        MCS.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
         return 1;
       }
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Append(opt.Value);
       Environment.SetEnvironmentVariable(opt.Key, envPath.ToString(), opt.Target);
-      MyConsole.WriteLine($"\nAppended '{opt.Value}' to '{opt.Key}'.");
+      MCS.WriteLine($"\nAppended '{opt.Value}' to '{opt.Key}'.");
       return 0;
     }
 
     public static int Prepend(PrependOptions opt) {
       if (opt.Target == EnvironmentVariableTarget.Machine && !IsAdmin()) Elevate();
       if (opt.Target == EnvironmentVariableTarget.Process) {
-        MyConsole.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
+        MCS.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
         return 1;
       }
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Prepend(opt.Value);
       Environment.SetEnvironmentVariable(opt.Key, envPath.ToString(), opt.Target);
-      MyConsole.WriteLine($"\nPrepended '{opt.Value}' to '{opt.Key}'.");
+      MCS.WriteLine($"\nPrepended '{opt.Value}' to '{opt.Key}'.");
       return 0;
     }
 
     public static int Remove(RemoveOptions opt) {
       if (opt.Target == EnvironmentVariableTarget.Machine && !IsAdmin()) Elevate();
       if (opt.Target == EnvironmentVariableTarget.Process) {
-        MyConsole.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
+        MCS.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
         return 1;
       }
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Remove(opt.Value);
       Environment.SetEnvironmentVariable(opt.Key, envPath.ToString(), opt.Target);
-      MyConsole.WriteLine($"\nRemoved '{opt.Value}' from '{opt.Key}'.");
+      MCS.WriteLine($"\nRemoved '{opt.Value}' from '{opt.Key}'.");
       return 0;
     }
 
@@ -59,26 +60,26 @@ namespace Pathed.Libraries {
     public static int Slim(SlimOptions opt) {
       if (opt.Target == EnvironmentVariableTarget.Machine && !IsAdmin()) Elevate();
       if (opt.Target == EnvironmentVariableTarget.Process) {
-        MyConsole.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
+        MCS.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
         return 1;
       }
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Slim();
       Environment.SetEnvironmentVariable(opt.Key, envPath.ToString(), opt.Target);
-      MyConsole.WriteLine($"\nSlimmed '{opt.Key}'.");
+      MCS.WriteLine($"\nSlimmed '{opt.Key}'.");
       return 0;
     }
 
     public static int Sort(SortOptions opt) {
       if (opt.Target == EnvironmentVariableTarget.Machine && !IsAdmin()) Elevate();
       if (opt.Target == EnvironmentVariableTarget.Process) {
-        MyConsole.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
+        MCS.WriteLineError("You cannot edit environment variable on Process target. It is temporary edit!");
         return 1;
       }
       EnvPath envPath = new EnvPath(opt.Key, opt.Target);
       envPath.Sort();
       Environment.SetEnvironmentVariable(opt.Key, envPath.ToString(), opt.Target);
-      MyConsole.WriteLine($"\nSorted '{opt.Key}'.");
+      MCS.WriteLine($"\nSorted '{opt.Key}'.");
       return 0;
     }
 
@@ -88,7 +89,7 @@ namespace Pathed.Libraries {
 
     // This doesn't actually create elevated process, but I'll use this name for later use.
     private static void Elevate() {
-      MyConsole.WriteLineError("Administrator privilege is required.");
+      MCS.WriteLineError("Administrator privilege is required.");
       Environment.Exit(1);
     }
 

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using static MyConsole.MyConsole;
+using MyConsole;
 
 namespace RemoveEmptyDirectories {
   internal class Program {
@@ -11,18 +11,18 @@ namespace RemoveEmptyDirectories {
       else targetDir = Directory.GetCurrentDirectory();
 
       if (!Directory.Exists(targetDir)) {
-        Error("Provided path is not a directory.");
+        MCS.Error("Provided path is not a directory.");
         Environment.Exit(1);
       }
 
       while (true) {
-        Info(targetDir.Replace("\\", "/"), "TARGET");
+        MCS.Info(targetDir.Replace("\\", "/"), "TARGET");
         Console.Write("Continue? (y/n): ");
         string res = Console.ReadLine().ToLower();
 
         if (res == "y") break;
         else if (res == "n") return;
-        else Error("Invalid input. Enter 'y' to continue or 'n' to abort.");
+        else MCS.Error("Invalid input. Enter 'y' to continue or 'n' to abort.");
       }
 
       RemoveEmptyDirectories(targetDir);
@@ -49,9 +49,9 @@ namespace RemoveEmptyDirectories {
       if (isEmpty) {
         try {
           Directory.Delete(target, true);
-          Info(target.Replace("\\", "/"), "DELETED");
+          MCS.Info(target.Replace("\\", "/"), "DELETED");
         } catch (Exception ex) {
-          Error($"Failed to delete '{target}': {ex.Message}");
+          MCS.Error($"Failed to delete '{target}': {ex.Message}");
         }
       }
     }

@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static MyConsole.MyConsole;
+using MyConsole;
 
 namespace Renumber {
   internal class Program {
@@ -14,16 +14,16 @@ namespace Renumber {
       else targetDir = Directory.GetCurrentDirectory();
 
       if (!Directory.Exists(targetDir)) {
-        Error("Provided path is not a directory.");
+        MCS.Error("Provided path is not a directory.");
         Environment.Exit(1);
       }
 
-      Info(targetDir.Replace("\\", "/"), "TARGET");
+      MCS.Info(targetDir.Replace("\\", "/"), "TARGET");
 
       string[] webpFiles = Directory.GetFiles(targetDir, "*.webp").Where(f => Regex.IsMatch(Path.GetFileNameWithoutExtension(f), @"^\d+$")).ToArray();
 
       if (webpFiles.Length == 0) {
-        Error("There is no WebP file to rename.");
+        MCS.Error("There is no WebP file to rename.");
         Environment.Exit(0);
       }
 
@@ -39,7 +39,7 @@ namespace Renumber {
         string newFileName = Path.Combine(targetDir, (i + 1).ToString("D3") + ".webp");
         File.Move(webpFiles[i], newFileName);
       }
-      Info("Rename complete");
+      MCS.Info("Rename complete");
     }
   }
 }

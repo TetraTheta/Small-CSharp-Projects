@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 namespace ConvertWebP {
+
   internal static class Program {
     [STAThread]
     private static void Main(string[] args) {
@@ -17,14 +18,23 @@ namespace ConvertWebP {
       Options options = ArgumentParser.Parse(args);
 
       // Check cwebp and magick
-      if (!RunPrograms.CheckCwebp()) Dialogs.ShowError(Resources.ErrNoCwebp);
-      if (!RunPrograms.CheckMagick()) Dialogs.ShowError(Resources.ErrNoMagick);
+      if (!RunPrograms.CheckCwebp()) {
+        Dialogs.ShowError(Resources.ErrNoCwebp);
+      }
+
+      if (!RunPrograms.CheckMagick()) {
+        Dialogs.ShowError(Resources.ErrNoMagick);
+      }
       // Check file list
       string[] files = FilePath.GetImageFileArray(options.Path);
-      if (files.Length == 0) Dialogs.ShowError(Resources.ErrNoFileToProcess);
+      if (files.Length == 0) {
+        Dialogs.ShowError(Resources.ErrNoFileToProcess);
+      }
       // Create 'converted' subdir
       string convertedPath = Path.Combine(FilePath.GetParentDirectory(options.Path), "converted");
-      if (!Directory.Exists(convertedPath)) Directory.CreateDirectory(convertedPath);
+      if (!Directory.Exists(convertedPath)) {
+        Directory.CreateDirectory(convertedPath);
+      }
       // Convert image files (opens Form window)
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);

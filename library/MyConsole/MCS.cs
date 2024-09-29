@@ -1,7 +1,7 @@
 using System;
 
 namespace MyConsole {
-  public static class MyConsole {
+  public static class MCS {
     public static void Error(string text, string header = "ERROR", ConsoleColor color = ConsoleColor.Red) {
       Write(header + " ", color);
       WriteLine(text);

@@ -4,7 +4,7 @@ using ImageConverter.Libraries;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using static MyConsole.MyConsole;
+using MyConsole;
 
 namespace ImageConverter {
   public static class Program {
@@ -103,7 +103,7 @@ namespace ImageConverter {
       // Print error
       if (!isOK && msgs.Count > 0) {
         foreach (string msg in msgs) {
-          Error(msg);
+          MCS.Error(msg);
         }
         Environment.Exit(1);
       }

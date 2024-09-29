@@ -1,10 +1,10 @@
 using CommandLine;
 using CommandLine.Text;
+using MyConsole;
 using Pathed.Libraries;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static MyConsole.MyConsole;
 
 namespace Pathed {
   internal class Program {
@@ -47,7 +47,7 @@ namespace Pathed {
       } else {
         helpText = HelpText.AutoBuild(result, h => HelpText.DefaultParsingErrorsHandler(result, h), e => e, true);
       }
-      WriteLine(helpText);
+      MCS.WriteLine(helpText);
       return 1;
     }
   }

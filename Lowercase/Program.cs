@@ -1,6 +1,6 @@
 using System.IO;
 using System;
-using static MyConsole.MyConsole;
+using MyConsole;
 
 namespace Lowercase {
   internal class Program {
@@ -10,24 +10,24 @@ namespace Lowercase {
       else targetDir = Directory.GetCurrentDirectory();
 
       if (!Directory.Exists(targetDir)) {
-        Error("Provided path is not a directory.");
+        MCS.Error("Provided path is not a directory.");
         Environment.Exit(1);
       }
 
       while (true) {
-        Info(targetDir.Replace("\\", "/"), "TARGET");
+        MCS.Info(targetDir.Replace("\\", "/"), "TARGET");
         Console.Write("Continue? (y/n): ");
         string res = Console.ReadLine().ToLower();
 
         if (res == "y") break;
         else if (res == "n") return;
-        else Error("Invalid input. Enter 'y' to continue or 'n' to abort.");
+        else MCS.Error("Invalid input. Enter 'y' to continue or 'n' to abort.");
       }
 
       DirectoryInfo di = new DirectoryInfo(targetDir);
       Rename(di, true, true);
       Rename(di, true, false);
-      Info("Rename complete");
+      MCS.Info("Rename complete");
     }
 
     static void Rename(DirectoryInfo di, bool excludeSelf = false, bool isTemp = false) {

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using MyConsole;
 
 namespace Pathed.Libraries {
   public class EnvPath {
@@ -26,7 +27,7 @@ namespace Pathed.Libraries {
       try {
         realValue = GetFullPath(value);
       } catch (Win32Exception) {
-        MyConsole.WriteLineError("Failed to get full path of '" + value + "'");
+        MCS.WriteLineError("Failed to get full path of '" + value + "'");
         realValue = value;
       }
       if (paths.Contains(realValue, StringComparer.OrdinalIgnoreCase)) paths = RemoveElementFromArray(paths, realValue, StringComparison.OrdinalIgnoreCase);
@@ -39,7 +40,7 @@ namespace Pathed.Libraries {
       try {
         realValue = GetFullPath(value);
       } catch (Win32Exception) {
-        MyConsole.WriteLineError("Failed to get full path of '" + value + "'");
+        MCS.WriteLineError("Failed to get full path of '" + value + "'");
         realValue = value;
       }
       if (paths.Contains(realValue, StringComparer.OrdinalIgnoreCase)) paths = RemoveElementFromArray(paths, realValue, StringComparison.OrdinalIgnoreCase);
@@ -53,14 +54,14 @@ namespace Pathed.Libraries {
     }
 
     public void Show() {
-      MyConsole.WriteLine($"Environment Variable: {key}\nVariable Target: {target}");
-      MyConsole.WriteLine($"========================================");
+      MCS.WriteLine($"Environment Variable: {key}\nVariable Target: {target}");
+      MCS.WriteLine($"========================================");
       int pathsLength = Math.Max(2, (int)Math.Ceiling(Math.Log10(paths.Length + 1)));
       for (int i = 0; i < paths.Length; i++) {
         if (string.IsNullOrEmpty(paths[i])) continue;
         string index = (i + 1).ToString().PadLeft(pathsLength, '0');
-        if (DoesExist(paths[i])) MyConsole.WriteLine($"{index} {paths[i]}");
-        else MyConsole.WriteLine($"{index} {paths[i]} [INVALID]", ConsoleColor.Red);
+        if (DoesExist(paths[i])) MCS.WriteLine($"{index} {paths[i]}");
+        else MCS.WriteLine($"{index} {paths[i]} [INVALID]", ConsoleColor.Red);
       }
     }
 

@@ -3,7 +3,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Media;
-using static MyConsole.MyConsole;
+using MyConsole;
 
 namespace ImageConverter.Libraries {
   public class Runner {
@@ -65,7 +65,7 @@ namespace ImageConverter.Libraries {
           try {
             string destPath = Path.Combine(opt.Target, fi.Name);
             if (File.Exists(destPath)) {
-              Error($"File already exists: {destPath}");
+              MCS.Error($"File already exists: {destPath}");
               continue;
             }
             fi.MoveTo(destPath);
@@ -79,30 +79,30 @@ namespace ImageConverter.Libraries {
 
       pb.SetValue(fiAll.Length);
       SystemSounds.Asterisk.Play();
-      Info("All jobs complete");
+      MCS.Info("All jobs complete");
     }
     // Background
     public Runner(BackgroundOptions opt) {
       FileInfo[] fiBG = Helper.GetImageFiles(opt.Target);
       if (fiBG.Length == 0) {
-        Error(Res.Error_Target_NoFile);
+        MCS.Error(Res.Error_Target_NoFile);
         return;
       } else {
         Progress(new GameDefinition(opt.Game, Op.Background), fiBG, "BG");
         SystemSounds.Asterisk.Play();
-        Info("Background job complete");
+        MCS.Info("Background job complete");
       }
     }
     // Center
     public Runner(CenterOptions opt) {
       FileInfo[] fiC = Helper.GetImageFiles(opt.Target);
       if (fiC.Length == 0) {
-        Error(Res.Error_Target_NoFile);
+        MCS.Error(Res.Error_Target_NoFile);
         return;
       } else {
         Progress(new GameDefinition(opt.Game, Op.Center), fiC, "C");
         SystemSounds.Asterisk.Play();
-        Info("Center job complete");
+        MCS.Info("Center job complete");
       }
     }
     // CreateDirectory
@@ -127,9 +127,9 @@ namespace ImageConverter.Libraries {
         diFG4.Create();
         diF.Create();
         SystemSounds.Asterisk.Play();
-        Info("CreateDirectory job complete");
+        MCS.Info("CreateDirectory job complete");
       } catch (IOException e) {
-        Error(e.Message);
+        MCS.Error(e.Message);
         Console.WriteLine(e.StackTrace);
       }
     }
@@ -137,7 +137,7 @@ namespace ImageConverter.Libraries {
     public Runner(ForegroundOptions opt) {
       FileInfo[] fiFG = Helper.GetImageFiles(opt.Target);
       if (fiFG.Length == 0) {
-        Error(Res.Error_Target_NoFile);
+        MCS.Error(Res.Error_Target_NoFile);
         return;
       } else {
         if (opt.ChatCount == 0) Progress(new GameDefinition(opt.Game, Op.Foreground0), fiFG, "FG 0");
@@ -145,19 +145,19 @@ namespace ImageConverter.Libraries {
         else if (opt.ChatCount == 2) Progress(new GameDefinition(opt.Game, Op.Foreground2), fiFG, "FG 2");
         else if (opt.ChatCount == 3) Progress(new GameDefinition(opt.Game, Op.Foreground3), fiFG, "FG 3");
         else if (opt.ChatCount == 4) Progress(new GameDefinition(opt.Game, Op.Foreground4), fiFG, "FG 4");
-        Info("Foreground job complete");
+        MCS.Info("Foreground job complete");
       }
     }
     // Full
     public Runner(FullOptions opt) {
       FileInfo[] fiF = Helper.GetImageFiles(opt.Target);
       if (fiF.Length == 0) {
-        Error(Res.Error_Target_NoFile);
+        MCS.Error(Res.Error_Target_NoFile);
         return;
       } else {
         Progress(new GameDefinition(opt.Game, Op.Full), fiF, "F");
         SystemSounds.Asterisk.Play();
-        Info("Full job complete");
+        MCS.Info("Full job complete");
       }
     }
     // Runner
