@@ -1,35 +1,62 @@
+using CommandLine;
+using CommandLine.Text;
+using MyConsole;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MyConsole;
 
 namespace RemoveEmptyDirectories {
   internal class Program {
+    private class Options {
+      [Option('y', "yes", Default = false, HelpText = "Skip user confirmation")]
+      public bool IsYes { get; set; }
+
+      [Value(0, Required = false, HelpText = "Target directory")]
+      public string Target { get; set; } = Directory.GetCurrentDirectory();
+    }
+
+    private static int DisplayHelp<T>(ParserResult<T> result, IEnumerable<Error> errs) {
+      HelpText helpText = null;
+      if (errs.IsVersion()) {
+        helpText = HelpText.AutoBuild(result, maxDisplayWidth: Console.WindowWidth);
+      } else {
+        helpText = HelpText.AutoBuild(result, h => HelpText.DefaultParsingErrorsHandler(result, h), e => e, true, maxDisplayWidth: Console.WindowWidth);
+      }
+      Console.WriteLine(helpText);
+      return 1;
+    }
+
     private static void Main(string[] args) {
-      string targetDir;
-      if (args.Length > 0) targetDir = args[0];
-      else targetDir = Directory.GetCurrentDirectory();
+      var result = new Parser(c => {
+        c.HelpWriter = null;
+        c.CaseSensitive = false;
+        c.CaseInsensitiveEnumValues = true;
+      }).ParseArguments(args, typeof(Options));
+      result.WithParsed<Options>(opt => {
+        if (!Directory.Exists(opt.Target)) {
+          MCS.Error("Provided path is not a directory.");
+          Environment.Exit(1);
+        }
 
-      if (!Directory.Exists(targetDir)) {
-        MCS.Error("Provided path is not a directory.");
-        Environment.Exit(1);
-      }
+        while (true) {
+          string p = opt.Target.Replace("\\", "/");
+          MCS.Info(p, "TARGET");
+          Console.Write("Continue? (y/n): ");
+          string res = Console.ReadLine().ToLower();
 
-      while (true) {
-        MCS.Info(targetDir.Replace("\\", "/"), "TARGET");
-        Console.Write("Continue? (y/n): ");
-        string res = Console.ReadLine().ToLower();
+          if (res == "y") break;
+          else if (res == "n") return;
+          else MCS.Error("Invalid input. Enter 'y' to continue or 'n' to abort.");
+        }
 
-        if (res == "y") break;
-        else if (res == "n") return;
-        else MCS.Error("Invalid input. Enter 'y' to continue or 'n' to abort.");
-      }
-
-      RemoveEmptyDirectories(targetDir);
+        RemoveEmptyDirectories(opt.Target);
+      });
+      result.WithNotParsed(errs => DisplayHelp(result, errs));
     }
 
     private static void RemoveEmptyDirectories(string target) {
-      string[] importants = new string[] { "System Volume Information", "RECYCLER", "Recycled", "NtUninstall", "$RECYCLE.BIN", "GAC_MSIL", "GAC_32", "WinSxS", "System32" };
+      string[] importants = new string[] { "System Volume Information", "RECYCLER", "Recycled", "NtUninstall", "$RECYCLE.BIN", "GAC_MSIL", "GAC_32", "WinSxS", "Start Menu", "System32" };
       string[] emptyFiles = new string[] { "desktop.ini", "Thumbs.db", ".DS_Store" };
       string[] emptyFilesEnds = new string[] { ".log" };
       string[] emptyFilesStarts = new string[] { "._" };

@@ -7,6 +7,7 @@ namespace ImageConverter.Libraries {
     string Target { get; set; }
     string ToString();
   }
+
   public interface IGameOptions : IOptions {
     Game Game { get; set; }
   }

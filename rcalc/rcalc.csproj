@@ -14,8 +14,8 @@
     <ProjectReference Include="..\library\DarkModeForms\DarkModeForms.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="[4.1.0]" />
-    <PackageReference Include="Fody" Version="6.8.2">
+    <PackageReference Include="Costura.Fody" />
+    <PackageReference Include="Fody">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

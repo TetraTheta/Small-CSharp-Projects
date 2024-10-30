@@ -1,9 +1,9 @@
 using ConsoleProgressBar;
+using MyConsole;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Media;
-using MyConsole;
 
 namespace ImageConverter.Libraries {
   public class Runner {

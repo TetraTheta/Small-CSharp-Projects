@@ -6,7 +6,6 @@ namespace ConsoleProgressBar {
   /// </summary>
   /// <typeparam name="T"></typeparam>
   public class ElementList<T> {
-
     /// <summary>
     /// The List of Elements of a Progressbar
     /// </summary>

@@ -5,7 +5,6 @@ using System.Windows.Forms;
 
 namespace rcalc {
   public partial class CalculatorForm : Form {
-
     public CalculatorForm(decimal x, decimal y, decimal a) {
       InitializeComponent();
       _ = new DarkModeCS(this);

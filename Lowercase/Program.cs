@@ -1,6 +1,6 @@
-using System.IO;
-using System;
 using MyConsole;
+using System;
+using System.IO;
 
 namespace Lowercase {
   internal class Program {
@@ -30,7 +30,7 @@ namespace Lowercase {
       MCS.Info("Rename complete");
     }
 
-    static void Rename(DirectoryInfo di, bool excludeSelf = false, bool isTemp = false) {
+    private static void Rename(DirectoryInfo di, bool excludeSelf = false, bool isTemp = false) {
       foreach (var subdir in di.GetDirectories()) {
         Rename(subdir, false, isTemp);
       }

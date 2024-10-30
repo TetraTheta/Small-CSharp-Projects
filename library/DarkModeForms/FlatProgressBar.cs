@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace DarkModeForms {
-
   public class FlatProgressBar : ProgressBar {
     public FlatProgressBar() {
       this.SetStyle(ControlStyles.UserPaint, true);

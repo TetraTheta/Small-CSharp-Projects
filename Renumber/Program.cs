@@ -1,13 +1,12 @@
+using MyConsole;
 using SortLib;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using MyConsole;
 
 namespace Renumber {
   internal class Program {
-
     private static void Main(string[] args) {
       string targetDir;
       if (args.Length > 0) targetDir = args[0];

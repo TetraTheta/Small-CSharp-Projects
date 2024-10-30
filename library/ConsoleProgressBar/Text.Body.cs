@@ -7,7 +7,6 @@ namespace ConsoleProgressBar {
     /// Definition for the Texts in a ProgressBar
     /// </summary>
     public class TextBody {
-
       /// <summary>
       /// Text in Body definition when ProgressBar is "Processing"
       /// </summary>

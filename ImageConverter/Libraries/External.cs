@@ -1,7 +1,7 @@
+using MyConsole;
 using System;
 using System.Diagnostics;
 using System.IO;
-using MyConsole;
 
 namespace ImageConverter.Libraries {
   public static class External {

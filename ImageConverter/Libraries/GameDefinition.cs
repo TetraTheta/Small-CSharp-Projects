@@ -1,5 +1,4 @@
 namespace ImageConverter.Libraries {
-
   public enum Game { TOF, WW }
 
   public enum Op { Background, Center, Foreground0, Foreground1, Foreground2, Foreground3, Foreground4, Full }

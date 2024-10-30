@@ -6,7 +6,6 @@ namespace ConsoleProgressBar.Extensions {
   /// Extensions for Element
   /// </summary>
   public static class ElementExtensions {
-
     /// <summary>
     /// Returns a list of Actions to write the element in Console
     /// </summary>

@@ -14,13 +14,11 @@
     <StartupObject>CustomJumpList.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="[4.1.0]" />
-    <PackageReference Include="Fody" Version="6.8.2">
+    <PackageReference Include="CommandLineParser" />
+    <PackageReference Include="Costura.Fody" />
+    <PackageReference Include="Fody">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\library\CLIParser\CLIParser.csproj" />
   </ItemGroup>
 </Project>

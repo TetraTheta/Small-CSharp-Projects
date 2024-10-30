@@ -5,7 +5,6 @@ using System.Windows.Forms;
 
 namespace FindInFiles {
   internal static class Program {
-
     [STAThread]
     private static void Main() {
       Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;

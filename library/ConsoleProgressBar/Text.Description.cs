@@ -7,7 +7,6 @@ namespace ConsoleProgressBar {
     /// Definition for the Description lines in a ProgressBar
     /// </summary>
     public class TextDescription {
-
       /// <summary>
       /// Description lines definition when ProgressBar is "Processing"
       /// </summary>

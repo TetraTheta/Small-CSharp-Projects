@@ -3,7 +3,6 @@ using System.Windows.Forms;
 
 namespace rcalc {
   internal static class Program {
-
     [STAThread]
     private static void Main(string[] args) {
       string strX = args.Length >= 1 ? args[0] : "0";

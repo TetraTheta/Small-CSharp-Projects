@@ -5,7 +5,6 @@ namespace ConsoleProgressBar.Extensions {
   /// Extensions for String
   /// </summary>
   public static class StringExtensions {
-
     /// <summary>
     /// Returns a string that occupy all console line/s
     /// </summary>

@@ -5,7 +5,6 @@ namespace ConsoleProgressBar.Extensions {
   /// TimeSpan extensions
   /// </summary>
   public static class TimeSpanExtensions {
-
     /// <summary>
     /// Gets a textual Sumarized for remaining time: X days, or Y hours, or Z minutes, etc.
     /// </summary>

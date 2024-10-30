@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace DarkModeForms {
-
   public class FlatTabControl : TabControl {
 
     #region Public Properties

@@ -1,10 +1,10 @@
 using CommandLine;
 using CommandLine.Text;
 using ImageConverter.Libraries;
+using MyConsole;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using MyConsole;
 
 namespace ImageConverter {
   public static class Program {

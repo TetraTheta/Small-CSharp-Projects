@@ -3,7 +3,6 @@ namespace ConsoleProgressBar {
   /// Definitions for Texts in a ProgressBar
   /// </summary>
   public partial class Text {
-
     /// <summary>
     /// Definition of the text in the same line as ProgressBar (Body)
     /// </summary>

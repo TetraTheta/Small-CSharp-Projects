@@ -7,7 +7,6 @@ using System.Text;
 namespace Pathed.Libraries {
   [Verb("append", HelpText = "Append variable to environment variable")]
   public class AppendOptions {
-
     [Value(0, MetaName = "VAR", HelpText = "New variable to add to the end of the environment variable", Required = true)]
     public string Value { get; set; }
 
@@ -41,7 +40,6 @@ namespace Pathed.Libraries {
 
   [Verb("prepend", HelpText = "Prepend variable to environment variable")]
   public class PrependOptions {
-
     [Value(0, MetaName = "VAR", HelpText = "New variable to add to the front of the environment variable", Required = true)]
     public string Value { get; set; }
 
@@ -75,7 +73,6 @@ namespace Pathed.Libraries {
 
   [Verb("remove", HelpText = "Remove variable from environment variable")]
   public class RemoveOptions {
-
     [Value(0, MetaName = "VAR", HelpText = "Variable to remove from the environment variable", Required = true)]
     public string Value { get; set; }
 
@@ -109,7 +106,6 @@ namespace Pathed.Libraries {
 
   [Verb("show", isDefault: true, HelpText = "Print environment variable as a list")]
   public class ShowOptions {
-
     [Option('e', "envvar", MetaValue = "ENVVAR", HelpText = "Name of the environment variable", Default = "PATH")]
     public string Key { get; set; }
 
@@ -139,7 +135,6 @@ namespace Pathed.Libraries {
 
   [Verb("slim", HelpText = "Remove duplicated or non-exeistent variable from environment variable")]
   public class SlimOptions {
-
     [Option('e', "envvar", MetaValue = "ENVVAR", HelpText = "Name of the environment variable", Default = "PATH")]
     public string Key { get; set; }
 
@@ -169,7 +164,6 @@ namespace Pathed.Libraries {
 
   [Verb("sort", HelpText = "Sort environment variable alphabetically")]
   public class SortOptions {
-
     [Option('e', "envvar", MetaValue = "ENVVAR", HelpText = "Name of the environment variable", Default = "PATH")]
     public string Key { get; set; }
 

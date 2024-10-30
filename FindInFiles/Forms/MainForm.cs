@@ -5,7 +5,6 @@ using System.Windows.Forms;
 
 namespace FindInFiles {
   public partial class MainForm : Form {
-
     public MainForm() {
       InitializeComponent();
       Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
