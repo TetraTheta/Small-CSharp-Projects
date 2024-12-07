@@ -26,10 +26,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\library\ConsoleProgressBar\ConsoleProgressBar.csproj" />
-    <ProjectReference Include="..\library\MyConsole\MyConsole.csproj" />
+    <ProjectReference Include="..\library\OutputColorizer\OutputColorizer.csproj" />
     <ProjectReference Include="..\library\SortLib\SortLib.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="clipr" />
     <PackageReference Include="CommandLineParser" />
     <PackageReference Include="Costura.Fody" />
     <PackageReference Include="Fody">

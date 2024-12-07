@@ -8,7 +8,7 @@
     <StartupObject>Pathed.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\library\MyConsole\MyConsole.csproj" />
+    <ProjectReference Include="..\library\OutputColorizer\OutputColorizer.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" />

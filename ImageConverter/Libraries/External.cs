@@ -1,4 +1,4 @@
-using MyConsole;
+using OutputColorizer;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -72,7 +72,7 @@ namespace ImageConverter.Libraries {
       proc.WaitForExit();
 
       if (proc.ExitCode != 0) {
-        MCS.Error(error);
+        Colorizer.WriteLine("[red!ERROR] {0}", error);
       }
 
       return result.Trim();

@@ -1,11 +1,12 @@
 using CommandLine;
 using CommandLine.Text;
 using ImageConverter.Libraries;
-using MyConsole;
+using OutputColorizer;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
+// TODO: Migrate to clipr which doesn't support subcommand
 namespace ImageConverter {
   public static class Program {
     public static string OriginalTitle = null;
@@ -103,7 +104,7 @@ namespace ImageConverter {
       // Print error
       if (!isOK && msgs.Count > 0) {
         foreach (string msg in msgs) {
-          MCS.Error(msg);
+          Colorizer.WriteLine("[red!ERROR] {0}", msg);
         }
         Environment.Exit(1);
       }

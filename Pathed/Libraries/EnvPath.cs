@@ -1,5 +1,6 @@
 using Microsoft.Win32.SafeHandles;
 using MyConsole;
+using OutputColorizer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,6 +28,7 @@ namespace Pathed.Libraries {
       try {
         realValue = GetFullPath(value);
       } catch (Win32Exception) {
+        Colorizer.WriteLine();
         MCS.WriteLineError("Failed to get full path of '" + value + "'");
         realValue = value;
       }
