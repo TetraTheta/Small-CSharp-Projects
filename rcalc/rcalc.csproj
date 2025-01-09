@@ -9,6 +9,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\MainIcon.ico</ApplicationIcon>
+    <StartupObject>rcalc.Program</StartupObject>
+    <AssemblyName>$(MSBuildProjectName.ToLower())</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\library\DarkModeForms\DarkModeForms.csproj" />

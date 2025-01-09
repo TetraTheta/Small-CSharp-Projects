@@ -5,21 +5,21 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Configuration {
-  public class INI {
+  public static class INI {
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     private static extern long WritePrivateProfileString(string section, string key, string value, string filePath);
 
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
     private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
 
-    public string GetINIPathPortable() {
+    public static string GetINIPathPortable(string appName) {
       string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-      return Path.Combine(exePath, "FindInFiles.ini");
+      return Path.Combine(exePath, $"{appName}.ini");
     }
 
-    public string GetINIPathAppData() {
+    public static string GetINIPathAppData(string appName) {
       string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-      return Path.Combine(Path.Combine(appDataPath, "FindInFiles"), "FindInFiles.ini");
+      return Path.Combine(Path.Combine(appDataPath, appName), $"{appName}.ini");
     }
   }
 }

@@ -1,5 +1,4 @@
 using Microsoft.Win32.SafeHandles;
-using MyConsole;
 using OutputColorizer;
 using System;
 using System.Collections.Generic;
@@ -18,9 +17,7 @@ namespace Pathed.Libraries {
     public EnvPath(string key, EnvironmentVariableTarget evTarget) {
       this.key = key;
       target = evTarget.ToString();
-      paths = Environment.GetEnvironmentVariable(key, evTarget)
-        .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-        .Select(path => path.Replace(";", "")).ToArray();
+      paths = Environment.GetEnvironmentVariable(key, evTarget).Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(path => path.Replace(";", "")).ToArray();
     }
 
     public void Append(string value) {
@@ -28,8 +25,8 @@ namespace Pathed.Libraries {
       try {
         realValue = GetFullPath(value);
       } catch (Win32Exception) {
-        Colorizer.WriteLine();
-        MCS.WriteLineError("Failed to get full path of '" + value + "'");
+        Console.WriteLine();
+        Colorizer.WriteLine($"[red!Failed to get full path of '{value}']");
         realValue = value;
       }
       if (paths.Contains(realValue, StringComparer.OrdinalIgnoreCase)) paths = RemoveElementFromArray(paths, realValue, StringComparison.OrdinalIgnoreCase);
@@ -42,7 +39,7 @@ namespace Pathed.Libraries {
       try {
         realValue = GetFullPath(value);
       } catch (Win32Exception) {
-        MCS.WriteLineError("Failed to get full path of '" + value + "'");
+        Colorizer.WriteLine($"[red!Failed to get full path of '{value}']");
         realValue = value;
       }
       if (paths.Contains(realValue, StringComparer.OrdinalIgnoreCase)) paths = RemoveElementFromArray(paths, realValue, StringComparison.OrdinalIgnoreCase);
@@ -56,14 +53,14 @@ namespace Pathed.Libraries {
     }
 
     public void Show() {
-      MCS.WriteLine($"Environment Variable: {key}\nVariable Target: {target}");
-      MCS.WriteLine($"========================================");
+      Colorizer.WriteLine($"[yellow!Environment Variable]: [cyan!{key}]\n[yellow!Variable Target]: [cyan!{target}]");
+      Colorizer.WriteLine("[yellow!========================================]");
       int pathsLength = Math.Max(2, (int)Math.Ceiling(Math.Log10(paths.Length + 1)));
       for (int i = 0; i < paths.Length; i++) {
         if (string.IsNullOrEmpty(paths[i])) continue;
         string index = (i + 1).ToString().PadLeft(pathsLength, '0');
-        if (DoesExist(paths[i])) MCS.WriteLine($"{index} {paths[i]}");
-        else MCS.WriteLine($"{index} {paths[i]} [INVALID]", ConsoleColor.Red);
+        if (DoesExist(paths[i])) Console.WriteLine($"{index} {paths[i]}");
+        else Colorizer.WriteLine($"[red!{index} {paths[i]} [INVALID]]", ConsoleColor.Red);
       }
     }
 

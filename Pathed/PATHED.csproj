@@ -6,6 +6,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Pathed.Program</StartupObject>
+    <AssemblyName>$(MSBuildProjectName.ToLower())</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\library\OutputColorizer\OutputColorizer.csproj" />

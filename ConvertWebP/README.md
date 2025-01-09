@@ -1,3 +1,0 @@
-# ConvertWebP
-
-TODO

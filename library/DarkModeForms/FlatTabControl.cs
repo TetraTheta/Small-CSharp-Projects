@@ -110,9 +110,8 @@ namespace DarkModeForms {
     private void CloseTab(int i) {
       if (PreRemoveTabPage != null) {
         bool closeIt = PreRemoveTabPage(i);
-        if (!closeIt) {
+        if (!closeIt)
           return;
-        }
       }
       TabPages.Remove(TabPages[i]);
     }
@@ -163,7 +162,8 @@ namespace DarkModeForms {
       Point[] points;
 
       if (Alignment == TabAlignment.Top) {
-        points = new[] {
+        points = new[]
+        {
           new Point(tabRect.Left+3, tabRect.Bottom),
           new Point(tabRect.Left+3, tabRect.Top + 0),
           new Point(tabRect.Left + 0, tabRect.Top),
@@ -173,7 +173,8 @@ namespace DarkModeForms {
           new Point(tabRect.Left+3, tabRect.Bottom)
         };
       } else {
-        points = new[] {
+        points = new[]
+        {
           new Point(tabRect.Left, tabRect.Top),
           new Point(tabRect.Right, tabRect.Top),
           new Point(tabRect.Right, tabRect.Bottom - 0),
@@ -191,8 +192,10 @@ namespace DarkModeForms {
         g.DrawPolygon(new Pen(HeaderColor), points);
 
         if (isSelected) {
-          g.DrawLine(new Pen(BackColor), new Point(tabRect.Left, tabRect.Top), new Point(tabRect.Left + 3, tabRect.Top));
-          g.DrawLine(new Pen(Color.DodgerBlue), new Point(tabRect.Left + 3, tabRect.Top), new Point(tabRect.Left + tabRect.Width, tabRect.Top));
+          g.DrawLine(new Pen(BackColor),
+            new Point(tabRect.Left, tabRect.Top), new Point(tabRect.Left + 3, tabRect.Top));
+          g.DrawLine(new Pen(Color.DodgerBlue),
+            new Point(tabRect.Left + 3, tabRect.Top), new Point(tabRect.Left + tabRect.Width, tabRect.Top));
         }
       }
 
