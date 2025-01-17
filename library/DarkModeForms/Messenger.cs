@@ -804,7 +804,7 @@ namespace DarkModeForms {
       if (IsCurrentLanguageSupported(new List<string> { "en", "es", "fr", "de", "ru", "ko" }, CurrentLanguage)) {
         _ret = CurrentLanguage;
       }
-      if (CurrentLanguage.ToLowerInvariant().Equals("zh")) {
+      if (CurrentLanguage.Equals("zh", StringComparison.InvariantCultureIgnoreCase)) {
         var LangVariable = CultureInfo.CurrentCulture.Name;
         if (string.Equals(LangVariable, "zh-CN") || string.Equals(LangVariable, "zh-SG") || string.Equals(LangVariable, "zh-Hans")) {
           _ret = "zh-Hans";

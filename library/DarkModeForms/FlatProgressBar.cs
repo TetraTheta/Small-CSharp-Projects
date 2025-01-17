@@ -46,7 +46,7 @@ namespace DarkModeForms {
       g.Dispose();
     }
 
-    public int Minimum {
+    public new int Minimum {
       get {
         return min;
       }
@@ -74,7 +74,7 @@ namespace DarkModeForms {
       }
     }
 
-    public int Maximum {
+    public new int Maximum {
       get {
         return max;
       }
@@ -97,7 +97,7 @@ namespace DarkModeForms {
       }
     }
 
-    public int Value {
+    public new int Value {
       get {
         return val;
       }

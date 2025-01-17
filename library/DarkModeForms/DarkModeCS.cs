@@ -269,7 +269,6 @@ namespace DarkModeForms {
 
     private IntPtr originalWndProc;
     private WndProc newWndProcDelegate;
-    private IntPtr formHandle;
     private bool applyingTheme = false; // Flag to prevent recursion
 
     #endregion Private Static Members
@@ -1375,11 +1374,13 @@ namespace DarkModeForms {
       base.OnRenderItemBackground(e);
 
       // Only draw border for ComboBox items
+#pragma warning disable CS0184 // This is not good approach
       if (e.Item is ComboBox) {
         Rectangle rect = new Rectangle(Point.Empty, e.Item.Size);
         e.Graphics.DrawRectangle(new Pen(MyColors.ControlLight, 1), rect);
       }
     }
+#pragma warning restore CS0184
 
     // For Menu Items BackColor:
     protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e) {
