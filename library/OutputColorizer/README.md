@@ -31,3 +31,6 @@ Colorizer.WriteLine("[Green!Hello {1}, this is [Yellow!{0}]]", "me", "world");
 string s1 = "me", s2 = "world";
 Colorizer.WriteLine($"[{ConsoleColor.Red}!Hello {s2}, this is [Cyan!{s1}]]");
 ```
+
+## TODO
+* Allow `\n`(New Line), `\t`(Tab), `\u`, `\U`, `\x`(Unicode character), `\u001b[0m`(ANSI escape sequence) in `Token`.
